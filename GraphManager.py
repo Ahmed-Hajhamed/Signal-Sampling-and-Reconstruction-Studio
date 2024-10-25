@@ -7,10 +7,10 @@ class GraphManager:
         # Plot the reconstructed signal
         pass
 
-    def plot_difference(self, original_signal, recovered_signal):
+    def plot_difference(self, signals_difference):
         # Plot the difference between original and recovered signals
         pass
 
-    def plot_frequency_domain(self, signal):
+    def plot_frequency_domain(self, recovered_signal):
         # Plot the frequency domain to check for aliasing
         pass
