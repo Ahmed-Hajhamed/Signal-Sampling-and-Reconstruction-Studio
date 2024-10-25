@@ -11,5 +11,5 @@ class SignalMixer:
         pass
 
     def get_composed_signal(self):
-        # Return the composed signal
+        # Return the composed signal in a 2D numpy array
         pass
