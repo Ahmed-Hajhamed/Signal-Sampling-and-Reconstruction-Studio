@@ -8,7 +8,6 @@ class SignalMixer:
         # Add a sinusoidal component to the signal
 
         SignalMixer.components.append(amplitude * np.cos(2 * np.pi * frequency * duration))
-        pass
 
     def remove_component(self, index):
         # Remove a sinusoidal component
