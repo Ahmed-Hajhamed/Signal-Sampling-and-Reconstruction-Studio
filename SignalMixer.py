@@ -1,15 +1,19 @@
-class SignalMixer:
-    def __init__(self):
-        self.components = []
+import numpy as np
 
-    def add_sinusoidal_component(self, frequency, amplitude):
+
+class SignalMixer:
+    components = []
+
+    def add_sinusoidal_component(self, frequency, amplitude, duration):
         # Add a sinusoidal component to the signal
+
+        SignalMixer.components.append(amplitude * np.cos(2 * np.pi * frequency * duration))
         pass
 
     def remove_component(self, index):
         # Remove a sinusoidal component
-        pass
+        SignalMixer.components.pop(index)
 
     def get_composed_signal(self):
-        # Return the composed signal in a 2D numpy array
-        pass
+        # Return the composed signal
+        return SignalMixer.components

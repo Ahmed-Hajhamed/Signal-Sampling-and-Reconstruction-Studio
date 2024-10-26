@@ -1,6 +1,6 @@
 class SignalLoader:
     def load_signal_from_file(self, filepath):
-        # Load the signal from the specified file in a 2D numpy array
+        # Load the signal from the specified file
         pass
 
     def load_signal_from_mixer(self, signal):
