@@ -1,4 +1,6 @@
+import sys
 import numpy as np
+import matplotlib.pyplot as plt
 from Reconstruction import Reconstruction
 class SignalProcessor:
 
@@ -62,6 +64,34 @@ class SignalProcessor:
         return signals_difference
     
 
-    def fourier_transform(self, signal):
+    def frequency_domain(self, recovered_signal, sampling_frequency):
         # Perform Fourier transform to check for aliasing
-        pass
+        """
+        Plots the full frequency domain of recovered signal.
+
+        Parameters:
+        - signal_array (np.ndarray): 2D array with time in the first column and signal values in the second column.
+        """
+        # Extract time and signal values
+        signal = recovered_signal[:, 1]
+        
+     
+        time_intervals = 1 / sampling_frequency  #time interval between samples
+        
+        # Number of samples
+        number_of_samples = len(signal)
+        
+        # Perform FFT to get frequency components
+        freq_spectrum = np.fft.fft(signal)
+        
+        # Generate the full range of frequency bins (including negative frequencies)
+        freqs = np.fft.fftfreq(number_of_samples, d=time_intervals)
+        
+        # Plot the magnitude spectrum, including negative frequencies
+        plt.figure(figsize=(10, 5))
+        plt.plot(freqs, np.abs(freq_spectrum) * 2 / number_of_samples)  # Scaled magnitude spectrum for both positive and negative frequencies
+        plt.xlabel("Frequency (Hz)")
+        plt.ylabel("Magnitude")
+        plt.title("Full Frequency Domain Representation (including negative frequencies)")
+        plt.grid()
+        plt.show()
