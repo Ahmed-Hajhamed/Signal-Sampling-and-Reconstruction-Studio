@@ -6,28 +6,31 @@ class SignalProcessor:
 
     def sample_signal(self, signal, sampling_frequency=None, method="uniform", threshold=None):
         # This function uses different methods to take samples (uniform, non-uniform, or threshold sampling)
-        time = signal[:, 0]
-        values = signal[:, 1]
+        """
+        Creates samples from a signal based on the method chosen; uniform, non-uniform or threshold sampling.
+        """
+        time_data = signal[:, 0]
+        amplitude_data = signal[:, 1]
 
         if method == "uniform":
             if sampling_frequency is None:
                 raise ValueError("For uniform sampling, 'sampling_rate' must be specified.")
             
             # Sample uniformly by picking indices at intervals based on sampling rate
-            sampling_interval = int(1 / sampling_frequency / (time[1] - time[0]))  # samples per interval
-            sampled_indices = np.arange(0, len(time), sampling_interval)
+            sampling_interval = int(1 / sampling_frequency / (time_data[1] - time_data[0]))  # samples per interval
+            sampled_indices = np.arange(0, len(time_data), sampling_interval)
         
         elif method == "non-uniform":
             # Non-uniform sampling example (here, random selection)
             random_generator = np.random.default_rng(0)  # Set seed for reproducibility
-            sampled_indices = np.sort(random_generator.choice(len(time), int(len(time) * 0.5), replace=False))
+            sampled_indices = np.sort(random_generator.choice(len(time_data), int(len(time_data) * 0.5), replace=False))
         
         elif method == "threshold":
             if threshold is None:
                 raise ValueError("For threshold-based sampling, 'threshold' must be specified.")
             
             # Sample based on signal crossing the threshold level
-            sampled_indices = np.nonzero(np.abs(np.diff(np.sign(values - threshold))) == 2)[0] #checks if there's a value is crossing the threshold
+            sampled_indices = np.nonzero(np.abs(np.diff(np.sign(amplitude_data - threshold))) == 2)[0] #checks if there's a value is crossing the threshold
         
         else:
             raise ValueError("Invalid method. Choose 'uniform', 'non-uniform', or 'threshold'.")
@@ -40,6 +43,9 @@ class SignalProcessor:
     def recover_signal(self, sampled_points, sampling_frequency, method):
         # Reconstruct the signal using the specified method
         # Outputs a 2D numpy array
+        """
+        Reconstructs original signal from sampled points based on 3 methods; Niquist-Shannon,...
+        """
         if method == 'niquist' :
             recoverd_signal = Reconstruction.whittaker_shannon(self, sampled_points, sampling_frequency)
         return recoverd_signal
@@ -48,6 +54,9 @@ class SignalProcessor:
     def calculate_difference(self, original_signal, recovered_signal):
         # Calculate the difference between original and recovered signals
         # Outputs signals_difference in a 2D numpy array
+        """
+        Calculates the error in the recovered signal (difference between original and recovered signal).
+        """
         original_signal_time = original_signal[:, 0]
         original_signal_values = original_signal [:, 1]
 
