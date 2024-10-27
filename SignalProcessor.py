@@ -40,15 +40,20 @@ class SignalProcessor:
         return sampled_points
 
 
-    def recover_signal(self, sampled_points, sampling_frequency, method):
+    def recover_signal(self, sampled_points, sampling_frequency, method = "niquistShannon"):
         # Reconstruct the signal using the specified method
         # Outputs a 2D numpy array
         """
         Reconstructs original signal from sampled points based on 3 methods; Niquist-Shannon,...
         """
-        if method == 'niquist' :
+        if method == 'niquistShannon' :
             recoverd_signal = Reconstruction.whittaker_shannon(self, sampled_points, sampling_frequency)
+    
+        else:
+         raise ValueError("Invalid method. Choose 'niquistShannon', ")
+        
         return recoverd_signal
+         
     
 
     def calculate_difference(self, original_signal, recovered_signal):
