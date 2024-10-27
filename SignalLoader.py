@@ -17,8 +17,8 @@ def load_signal_from_file(filepath):
 def load_signal_from_mixer(signal):
     # Load a user-composed signal
     global signal_data
-    amplitude_data = SignalMixer.get_composed_signal()
     time_data = SignalMixer.time
+    amplitude_data = SignalMixer.get_composed_signal()
     signal_data = np.array([time_data, amplitude_data])
 
 
