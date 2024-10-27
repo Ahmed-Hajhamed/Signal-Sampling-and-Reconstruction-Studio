@@ -11,7 +11,7 @@ def load_signal_from_file(filepath):
     signal_data = pd.read_csv(filepath)
     time_data = signal_data.iloc[:, 0].values
     amplitude_data = signal_data.iloc[:, 1].values
-    signal_data = np.array([time_data, amplitude_data])
+    signal_data = np.coloumn_stack([time_data, amplitude_data])
 
 
 def load_signal_from_mixer(signal):
@@ -19,7 +19,7 @@ def load_signal_from_mixer(signal):
     global signal_data
     time_data = SignalMixer.time
     amplitude_data = SignalMixer.get_composed_signal()
-    signal_data = np.array([time_data, amplitude_data])
+    signal_data = np.coloumn_stack([time_data, amplitude_data])
 
 
 def add_noise(signal, snr):
