@@ -2,33 +2,34 @@ import numpy as np
 import pandas as pd
 import SignalMixer
 
-data = None
+signal_data = None
 
 
 def load_signal_from_file(filepath):
     # Load the signal from the specified file
-    global data
-    data = pd.read_csv(filepath)
-    x_data = data.iloc[:, 0].values
-    y_data = data.iloc[:, 1].values
-    data = np.array([x_data, y_data])
+    global signal_data
+    signal_data = pd.read_csv(filepath)
+    time_data = signal_data.iloc[:, 0].values
+    amplitude_data = signal_data.iloc[:, 1].values
+    signal_data = np.array([time_data, amplitude_data])
 
 
 def load_signal_from_mixer(signal):
     # Load a user-composed signal
-    global data
-    y_data = SignalMixer.get_composed_signal()
-    x_data = SignalMixer.time
-    data = np.array([x_data, y_data])
+    global signal_data
+    amplitude_data = SignalMixer.get_composed_signal()
+    time_data = SignalMixer.time
+    signal_data = np.array([time_data, amplitude_data])
 
 
 def add_noise(signal, snr):
     # Add noise to the signal based on SNR
     signal_power = np.mean(signal**2)
     noise_power = signal_power / snr
-    noisy_signal = np.sqrt(noise_power) * np.random.normal(size=signal.shape)
+    random_generator = np.random.default_rng(1)
+    noisy_signal = np.sqrt(noise_power) * random_generator.normal(size=signal.shape)
     return noisy_signal
 
 
 def get_loaded_signal():
-    return data
+    return signal_data
