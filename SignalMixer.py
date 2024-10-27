@@ -13,8 +13,8 @@ def create_signal(frequency, amplitude):
 
 def set_time(duration):
     global time
-    sampling =100
-    time = np.linspace(0, duration, int(sampling * duration))
+    sampling_rate =100 * duration
+    time = np.linspace(0, duration, int(sampling_rate))
 
 
 def add_sinusoidal_component(frequency, amplitude):
