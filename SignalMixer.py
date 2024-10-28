@@ -7,16 +7,18 @@ time = np.array([])
 
 
 def add_components(expression: str):
-    pattern = r'(\d*)\s*(cos|sin)\((\d+)t\)'
+    pattern = r'([\+\-]?)\s*(\d*)\s*(cos|sin)\((\d+)t\)'
 
     # Finding all matches
     matches = re.findall(pattern, expression)
 
     for match in matches:
-        amplitude = int(match[0]) if match[0] else 1  # Default amplitude is 1 if not specified
-        func_type = match[1]
-        frequency = int(match[2])
-        components.append({'type': func_type, 'amplitude': amplitude, 'frequency': frequency})
+        sign = match[0] if match[0] else "+"  # Default sign is "+" if not specified
+        amplitude = int(match[1]) if match[1] else 1  # Default amplitude is 1 if not specified
+        func_type = match[2]
+        frequency = int(match[3])
+
+        components.append({'sign': sign, 'type': func_type, 'amplitude': amplitude, 'frequency': frequency})
 
 
 def create_signal(type_of_signal, frequency, amplitude):
@@ -44,20 +46,20 @@ def add_sinusoidal_component():
     for component in components:
         signal = create_signal(component["type"], component["amplitude"], component["frequency"])
         if composed_signal:
-            composed_signal = composed_signal + signal
+            composed_signal = composed_signal + signal if component['sign'] == "+" else composed_signal - signal
         else:
             composed_signal = signal
 
 
-def remove_component(index):
-    # Remove a sinusoidal component
-    global components
-    global composed_signal
-
-    signal_component = components.pop(index)
-    signal = create_signal(signal_component["type"], signal_component["amplitude"], signal_component["frequency"])
-    if composed_signal:
-        composed_signal = composed_signal - signal
+# def remove_component(index):
+#     # Remove a sinusoidal component
+#     global components
+#     global composed_signal
+#
+#     signal_component = components.pop(index)
+#     signal = create_signal(signal_component["type"], signal_component["amplitude"], signal_component["frequency"])
+#     if composed_signal:
+#         composed_signal = composed_signal - signal
 
 
 def get_composed_signal():
