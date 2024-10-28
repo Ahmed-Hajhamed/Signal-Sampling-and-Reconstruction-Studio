@@ -1,13 +1,32 @@
 import numpy as np
+import re
 
 components = []
 composed_signal = None
-time = 0
+time = np.array([])
 
 
-def create_signal(frequency, amplitude):
+def add_components(expression: str):
+    pattern = r'(\d*)\s*(cos|sin)\((\d+)t\)'
+
+    # Finding all matches
+    matches = re.findall(pattern, expression)
+
+    for match in matches:
+        amplitude = int(match[0]) if match[0] else 1  # Default amplitude is 1 if not specified
+        func_type = match[1]
+        frequency = int(match[2])
+        components.append({'type': func_type, 'amplitude': amplitude, 'frequency': frequency})
+
+
+def create_signal(type_of_signal, frequency, amplitude):
     global time
-    signal = amplitude * np.cos(2 * np.pi * frequency * time)
+
+    if type_of_signal == "cos":
+        signal = amplitude * np.cos(2 * np.pi * frequency * time)
+    else:
+        signal = amplitude * np.sin(2 * np.pi * frequency * time)
+
     return signal
 
 
@@ -17,17 +36,17 @@ def set_time(duration):
     time = np.linspace(0, duration, int(sampling_rate))
 
 
-def add_sinusoidal_component(frequency, amplitude):
+def add_sinusoidal_component():
     # Add a sinusoidal component to the signal
     global components
     global composed_signal
 
-    components.append((frequency, amplitude))
-    signal = create_signal(frequency, amplitude)
-    if composed_signal:
-        composed_signal = composed_signal + signal
-    else:
-        composed_signal = signal
+    for component in components:
+        signal = create_signal(component["type"], component["amplitude"], component["frequency"])
+        if composed_signal:
+            composed_signal = composed_signal + signal
+        else:
+            composed_signal = signal
 
 
 def remove_component(index):
@@ -36,8 +55,7 @@ def remove_component(index):
     global composed_signal
 
     signal_component = components.pop(index)
-    frequency, amplitude = signal_component[0], signal_component[1]
-    signal = create_signal(frequency, amplitude)
+    signal = create_signal(signal_component["type"], signal_component["amplitude"], signal_component["frequency"])
     if composed_signal:
         composed_signal = composed_signal - signal
 
