@@ -40,17 +40,22 @@ class SignalProcessor:
         return sampled_points
 
 
-    def recover_signal(self, sampled_points, sampling_frequency, method = "niquistShannon"):
+    def recover_signal(self, sampled_points, sampling_frequency, method = "whittakerShannon"):
         # Reconstruct the signal using the specified method
         # Outputs a 2D numpy array
         """
         Reconstructs original signal from sampled points based on 3 methods; Niquist-Shannon,...
         """
-        if method == 'niquistShannon' :
+        if method == 'whittakerShannon' :
             recoverd_signal = Reconstruction.whittaker_shannon(self, sampled_points, sampling_frequency)
+
+        elif method == 'compressedSensing' :
+            pass
+        elif method == 'levelCrossing' :
+            pass
     
         else:
-         raise ValueError("Invalid method. Choose 'niquistShannon', ")
+         raise ValueError("Invalid method. Choose 'whittakerShannon', compressedSensing or levelCrossing")
         
         return recoverd_signal
          
@@ -73,7 +78,7 @@ class SignalProcessor:
 
         magnitude_difference = np.abs(original_signal_values - recovered_signal_values)
 
-        signals_difference = np.column_stack( original_signal_time, magnitude_difference)
+        signals_difference = np.column_stack(original_signal_time, magnitude_difference)
         
         return signals_difference
     
@@ -81,14 +86,10 @@ class SignalProcessor:
     def frequency_domain(self, recovered_signal, sampling_frequency):
         # Perform Fourier transform to check for aliasing
         """
-        Plots the full frequency domain of recovered signal.
-
-        Parameters:
-        - signal_array (np.ndarray): 2D array with time in the first column and signal values in the second column.
+        Returns the full frequency domain of recovered signal.
         """
         # Extract time and signal values
         signal = recovered_signal[:, 1]
-        
      
         time_intervals = 1 / sampling_frequency  #time interval between samples
         
@@ -98,14 +99,10 @@ class SignalProcessor:
         # Perform FFT to get frequency components
         freq_spectrum = np.fft.fft(signal)
         
-        # Generate the full range of frequency bins (including negative frequencies)
-        freqs = np.fft.fftfreq(number_of_samples, d=time_intervals)
+        # Generate the full range of frequency bins
+        frequency_components = np.fft.fftfreq(number_of_samples, d=time_intervals)
+        magnitude_components = np.abs(freq_spectrum) * 2 / number_of_samples  #Scaled Magnitude
+
+        frequency_domain = np.column_stack(frequency_components, magnitude_components)
         
-        # Plot the magnitude spectrum, including negative frequencies
-        plt.figure(figsize=(10, 5))
-        plt.plot(freqs, np.abs(freq_spectrum) * 2 / number_of_samples)  # Scaled magnitude spectrum for both positive and negative frequencies
-        plt.xlabel("Frequency (Hz)")
-        plt.ylabel("Magnitude")
-        plt.title("Full Frequency Domain Representation (including negative frequencies)")
-        plt.grid()
-        plt.show()
+        return frequency_domain
