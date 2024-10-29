@@ -1,4 +1,6 @@
 import sys
+
+import numpy as np
 from PyQt5.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QGridLayout,
     QPushButton, QComboBox, QSlider, QLabel, QListWidget, QLineEdit, QFileDialog
@@ -10,11 +12,15 @@ from qt_material import apply_stylesheet
 
 import SignalLoader
 import SignalMixer
+from SignalProcessor import SignalProcessor
 
 
 class SamplingTheoryStudio(QMainWindow):
     def __init__(self):
         super().__init__()
+        self.sampling_frequency = 0
+        self.signal = None
+
         self.setWindowTitle("Sampling-Theory Studio")
         self.setGeometry(100, 100, 1200, 800)
 
@@ -82,6 +88,16 @@ class SamplingTheoryStudio(QMainWindow):
         self.sampling_slider.valueChanged.connect(self.update_sampling_frequency)
         self.reconstruction_combo.currentIndexChanged.connect(self.change_reconstruction_method)
 
+    def plot(self):
+        self.curve_original_signal_plot = self.original_signal_plot.plot((0, 0))
+        self.curve_reconstructed_signal_plot = self.reconstructed_signal_plot.plot(
+            SignalProcessor.recover_signal(SignalLoader.signal_data, SignalLoader.maximum_freq,
+                                           SignalProcessor.sample_signal(SignalLoader.signal_data,
+                                                                         SignalLoader.maximum_freq),
+                                           self.reconstruction_combo.currentText()))
+
+        self.curve_difference_signal_plot = self.difference_signal_plot.plot()
+        self.curve_frequency_domain_plot = self.frequency_domain_plot.plot()
     def load_signal(self):
         file_path, _ = QFileDialog.getOpenFileName(None, "Open CSV File", "", "CSV Files (*.csv)")
         SignalLoader.load_signal_from_file(file_path)
@@ -96,6 +112,10 @@ class SamplingTheoryStudio(QMainWindow):
         # print(f"Compose Signal functionality goes here {expression}")
 
     def update_sampling_frequency(self, value):
+        self.signal, self.sampling_frequency = SignalLoader.get_loaded_signal()
+
+        method = self.reconstruction_combo.currentText()
+        signal_sampled = SignalProcessor.sample_signal(self.signal, self.sampling_frequency, method)
         print(f"Sampling frequency updated to {value}")
         print(type(value))
 

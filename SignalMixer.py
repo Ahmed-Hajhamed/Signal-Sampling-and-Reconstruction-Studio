@@ -2,7 +2,7 @@ import numpy as np
 import re
 
 components = []
-composed_signal = None
+composed_signal = [[0,0], [0,0]]
 time = np.array([])
 
 

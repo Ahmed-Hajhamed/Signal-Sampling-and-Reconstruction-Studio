@@ -1,10 +1,11 @@
 import sys
 import numpy as np
-import matplotlib.pyplot as plt
 from Reconstruction import Reconstruction
+from scipy.fft import dct
+import SignalLoader
 class SignalProcessor:
 
-    def sample_signal(self, signal, sampling_frequency=None, method="uniform", threshold=None):
+    def sample_signal(self, signal, sampling_frequency=1000, method="uniform", threshold=None):
         # This function uses different methods to take samples (uniform, non-uniform, or threshold sampling)
         """
         Creates samples from a signal based on the method chosen; uniform, non-uniform or threshold sampling.
@@ -39,25 +40,30 @@ class SignalProcessor:
         sampled_points = signal[sampled_indices, :]
         return sampled_points
 
-
-    def recover_signal(self, sampled_points, sampling_frequency, method = "whittakerShannon"):
+    def recover_signal(self, sampled_points, sampling_frequency, sampled_indices, method = "whittakerShannon", threshold = None):
         # Reconstruct the signal using the specified method
         # Outputs a 2D numpy array
         """
         Reconstructs original signal from sampled points based on 3 methods; Niquist-Shannon,...
         """
+        recovered_signal = None
+        duration = len(SignalLoader.signal_data[:, 0])
+        uniform_time_points = np.linspace(0, duration, 100 * duration)
         if method == 'whittakerShannon' :
-            recoverd_signal = Reconstruction.whittaker_shannon(self, sampled_points, sampling_frequency)
+            recovered_signal = Reconstruction.whittaker_shannon(self, sampled_points, sampling_frequency)
 
         elif method == 'compressedSensing' :
-            pass
+            sampling_matrix = dct(np.eye(len(uniform_time_points)), axis=0, norm='ortho')
+
+            recovered_signal = Reconstruction.compressed_sensing_reconstruct(sampled_points, sampling_matrix, sampled_indices, duration,)
+
         elif method == 'levelCrossing' :
-            pass
+            recovered_signal = Reconstruction.level_crossing_reconstruct(sampled_points, duration, threshold)
     
         else:
          raise ValueError("Invalid method. Choose 'whittakerShannon', compressedSensing or levelCrossing")
         
-        return recoverd_signal
+        return recovered_signal
          
     
 
@@ -78,7 +84,7 @@ class SignalProcessor:
 
         magnitude_difference = np.abs(original_signal_values - recovered_signal_values)
 
-        signals_difference = np.column_stack(original_signal_time, magnitude_difference)
+        signals_difference = np.column_stack([original_signal_time, magnitude_difference])
         
         return signals_difference
     
@@ -103,6 +109,6 @@ class SignalProcessor:
         frequency_components = np.fft.fftfreq(number_of_samples, d=time_intervals)
         magnitude_components = np.abs(freq_spectrum) * 2 / number_of_samples  #Scaled Magnitude
 
-        frequency_domain = np.column_stack(frequency_components, magnitude_components)
+        frequency_domain = np.column_stack([frequency_components, magnitude_components])
         
         return frequency_domain
