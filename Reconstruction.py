@@ -20,8 +20,8 @@ class Reconstruction:
         time_points = np.arange(0, duration, T)
 
         # Extract sampled times and amplitudes
-        sampled_times = sampled_points[:, 0]
-        sampled_amplitudes = sampled_points[:, 1]
+        sampled_times = sampled_points[0]
+        sampled_amplitudes = sampled_points[1]
 
         # Initialize array for the reconstructed signal
         reconstructed_amplitudes = np.zeros_like(time_points)
@@ -31,11 +31,11 @@ class Reconstruction:
             # Sum each sampled amplitude scaled by the sinc function
             sinc_terms = np.sinc((t - sampled_times) / T)
             reconstructed_amplitudes[i] = np.sum(sampled_amplitudes * sinc_terms)
-        reconstructed_signal = np.column_stack([time_points, reconstructed_amplitudes])
+        reconstructed_signal = np.array([time_points, reconstructed_amplitudes])
         return reconstructed_signal
 
     @staticmethod
-    def compressed_sensing_reconstruct(sampled_points, sampling_matrix, sampled_indices, duration, sparsity_level):
+    def compressed_sensing_reconstruct(sampled_points, sampling_matrix, sampled_indices, duration):
         """
         Reconstructs a signal using Compressed Sensing (CS).
 
@@ -67,7 +67,7 @@ class Reconstruction:
         omp.fit(sampling_matrix_rows, sampled_points)
         recovered_amplitudes = omp.predict(sampling_matrix)
 
-        reconstructed_signal = np.column_stack ([uniform_time_points, recovered_amplitudes])
+        reconstructed_signal = np.array([uniform_time_points, recovered_amplitudes])
 
         return reconstructed_signal
 
@@ -90,6 +90,6 @@ class Reconstruction:
         interpolator = interp.interp1d(crossing_times, sampled_points, kind="linear", fill_value="extrapolate")
         reconstructed_amplitudes = interpolator(uniform_time_points)
 
-        reconstructed_signal = np.column_stack([uniform_time_points, reconstructed_amplitudes])
+        reconstructed_signal = np.array([uniform_time_points, reconstructed_amplitudes])
 
         return reconstructed_signal

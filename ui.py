@@ -1,11 +1,10 @@
 import sys
-
 import numpy as np
 from PyQt5.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QGridLayout,
     QPushButton, QComboBox, QSlider, QLabel, QListWidget, QLineEdit, QFileDialog
 )
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QTimer
 import pyqtgraph as pg
 from PyQt5.QtGui import QIntValidator
 from qt_material import apply_stylesheet
@@ -18,8 +17,6 @@ from SignalProcessor import SignalProcessor
 class SamplingTheoryStudio(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.sampling_frequency = 0
-        self.signal = SignalLoader.get_loaded_signal
 
         self.setWindowTitle("Sampling-Theory Studio")
         self.setGeometry(100, 100, 1200, 800)
@@ -62,11 +59,11 @@ class SamplingTheoryStudio(QMainWindow):
         self.reconstruction_label = QLabel("Reconstruction Method:")
         self.reconstruction_combo = QComboBox()
         self.reconstruction_combo.addItems(
-            ["Whittaker-Shannon", "Hussein-method", "Ziyad-Method ", "Ahmed-Method", "Rashed-Method"])
+            ["Whittaker Shannon", "Compressed Sensing", "Level Crossing"])
         self.noise_label = QLabel("Noise Level (SNR):")
         self.noise_input = QLineEdit()
         self.noise_input.setValidator(QIntValidator(1, 1000))
-        self.noise_input.setText("50")
+        self.noise_input.setText("0")
 
         control_layout.addWidget(self.load_button)
         control_layout.addWidget(self.compose_button)
@@ -88,16 +85,30 @@ class SamplingTheoryStudio(QMainWindow):
         self.sampling_slider.valueChanged.connect(self.update_sampling_frequency)
         self.reconstruction_combo.currentIndexChanged.connect(self.change_reconstruction_method)
 
-    def plot(self):
-        self.curve_original_signal_plot = self.original_signal_plot.plot((0, 0))
-        self.curve_reconstructed_signal_plot = self.reconstructed_signal_plot.plot(
-            SignalProcessor.recover_signal(SignalLoader.signal_data, SignalLoader.maximum_freq,
-                                           SignalProcessor.sample_signal(SignalLoader.signal_data,
-                                                                         SignalLoader.maximum_freq),
-                                           self.reconstruction_combo.currentText()))
+        self.signal= SignalLoader.get_loaded_signal()
+        self.max_frequency = SignalLoader.get_maximum_frequency()
+        self.sampling_frequency = 2 * self.max_frequency
+        self.method = self.reconstruction_combo.currentText()
+        self.sampled_points = SignalProcessor.sample_signal(sampling_frequency= self.sampling_frequency)
+        self.recovered_signal = SignalProcessor.recover_signal(self.sampled_points, self.sampling_frequency, method = self.method)
+        # self.difference_signal = SignalProcessor.calculate_difference(self.recovered_signal)
+        self.difference_signal = [[],[]]
+        self.frequency_domain = SignalProcessor.frequency_domain(self.recovered_signal, self.sampling_frequency)
 
-        self.curve_difference_signal_plot = self.difference_signal_plot.plot()
-        self.curve_frequency_domain_plot = self.frequency_domain_plot.plot()
+        self.timer = QTimer(self)
+        self.timer.setInterval(100)  # Update every 100ms
+        self.timer.timeout.connect(self.update_plot)
+
+
+
+    def update_plot(self):
+        self.curve_original_signal_plot = self.original_signal_plot.plot(*zip(*self.signal), pen=pg.mkPen('b', width = 2), name = 'Original Signal')
+        self.curve_reconstructed_signal_plot = self.reconstructed_signal_plot.plot(*zip(*self.recovered_signal), pen=pg.mkPen('b', width = 2), name = 'Recovered Signal')
+        self.curve_difference_signal_plot = self.difference_signal_plot.plot(*zip(*self.difference_signal), pen=pg.mkPen('b', width = 2), name = 'Error Signal')
+        self.curve_frequency_domain_plot = self.frequency_domain_plot.plot(*zip(*self.frequency_domain), pen=pg.mkPen('b', width = 2), name = 'Frequency Signal')
+        self.update_sampling_frequency(self.sampling_slider.value())
+
+
     def load_signal(self):
         file_path, _ = QFileDialog.getOpenFileName(None, "Open CSV File", "", "CSV Files (*.csv)")
         SignalLoader.load_signal_from_file(file_path)
@@ -106,16 +117,15 @@ class SamplingTheoryStudio(QMainWindow):
         SignalMixer.components.clear()
         SignalMixer.add_components(expression)
         if len(SignalMixer.components) > 0:
-            SignalMixer.composed_signal.clear()
+            # SignalMixer.composed_signal.clear()
             SignalMixer.add_sinusoidal_component()
             SignalLoader.load_signal_from_mixer()
-        # print(f"Compose Signal functionality goes here {expression}")
+        print(f"Compose Signal functionality goes here {expression}")
 
     def update_sampling_frequency(self, value):
-        self.signal, self.sampling_frequency = SignalLoader.get_loaded_signal()
-
-        method = self.reconstruction_combo.currentText()
-        signal_sampled = SignalProcessor.sample_signal(self.signal, self.sampling_frequency, method)
+        self.sampling_frequency = self.sampling_slider.value() * self.max_frequency
+        # self.sampling_frequency = value * self.max_frequency
+        self.sampled_points = SignalProcessor.sample_signal(self.sampling_frequency)
         print(f"Sampling frequency updated to {value}")
         print(type(value))
 
@@ -124,6 +134,8 @@ class SamplingTheoryStudio(QMainWindow):
         print(f"Noise level (SNR) updated to {value}")
 
     def change_reconstruction_method(self, index):
+        self.method = self.reconstruction_combo[index]
+        self.recovered_signal = SignalProcessor.recover_signal(self.sampled_points, self.sampling_frequency, mehtod = self.method)
         print(f"Reconstruction method changed to {index}")
 
 

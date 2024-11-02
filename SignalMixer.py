@@ -23,11 +23,13 @@ def add_components(expression: str):
 
 def create_signal(type_of_signal, frequency, amplitude):
     global time
-
+    
     if type_of_signal == "cos":
         signal = amplitude * np.cos(2 * np.pi * frequency * time)
-    else:
+    elif type_of_signal == "sin":
         signal = amplitude * np.sin(2 * np.pi * frequency * time)
+    else:
+        raise ValueError ("Invalid Sinusoidal")
 
     return signal
 
