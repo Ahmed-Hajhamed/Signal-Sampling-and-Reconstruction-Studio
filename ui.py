@@ -19,7 +19,7 @@ class SamplingTheoryStudio(QMainWindow):
     def __init__(self):
         super().__init__()
         self.sampling_frequency = 0
-        self.signal = None
+        self.signal = SignalLoader.get_loaded_signal
 
         self.setWindowTitle("Sampling-Theory Studio")
         self.setGeometry(100, 100, 1200, 800)

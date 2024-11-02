@@ -1,7 +1,6 @@
-from SignalLoader import SignalLoader
-from SignalMixer import SignalMixer
+import SignalMixer
 from SignalProcessor import SignalProcessor
-from SignalLoader import SignalLoader
+import SignalLoader
 from UIManager import UIManager
 class Application:
     def __init__(self):
