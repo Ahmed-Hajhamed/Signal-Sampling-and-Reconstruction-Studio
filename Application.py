@@ -6,7 +6,7 @@ class Application:
     def __init__(self):
         self.signal_loader = SignalLoader()
         self.signal_mixer = SignalMixer()
-        self.signal_processor = SignalProcessor()
+        self.signal_processor = self.signal_processor()
         self.ui_manager = UIManager()
 
     def run(self):

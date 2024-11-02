@@ -8,8 +8,7 @@ from PyQt5.QtCore import Qt, QTimer
 import pyqtgraph as pg
 from PyQt5.QtGui import QIntValidator
 from qt_material import apply_stylesheet
-
-import SignalLoader
+from SignalLoader import SignalLoader
 import SignalMixer
 from SignalProcessor import SignalProcessor
 
@@ -17,7 +16,8 @@ from SignalProcessor import SignalProcessor
 class SamplingTheoryStudio(QMainWindow):
     def __init__(self):
         super().__init__()
-
+        self.signal_loader = SignalLoader()
+        self.signal_processor = SignalProcessor()
         self.setWindowTitle("Sampling-Theory Studio")
         self.setGeometry(100, 100, 1200, 800)
 
@@ -37,6 +37,9 @@ class SamplingTheoryStudio(QMainWindow):
         self.curve_reconstructed_signal_plot = self.reconstructed_signal_plot.plot()
         self.curve_difference_signal_plot = self.difference_signal_plot.plot()
         self.curve_frequency_domain_plot = self.frequency_domain_plot.plot()
+
+        self.curve_original_signal_plot.show()
+        self.original_signal_plot.show()
 
         graph_layout.addWidget(self.original_signal_plot, 0, 0)
         graph_layout.addWidget(self.reconstructed_signal_plot, 0, 1)
@@ -85,33 +88,71 @@ class SamplingTheoryStudio(QMainWindow):
         self.sampling_slider.valueChanged.connect(self.update_sampling_frequency)
         self.reconstruction_combo.currentIndexChanged.connect(self.change_reconstruction_method)
 
-        self.signal= SignalLoader.get_loaded_signal()
-        self.max_frequency = SignalLoader.get_maximum_frequency()
+        self.signal= self.signal_loader.get_loaded_signal()
+        self.max_frequency = self.signal_loader.get_maximum_frequency()
         self.sampling_frequency = 2 * self.max_frequency
         self.method = self.reconstruction_combo.currentText()
-        self.sampled_points = SignalProcessor.sample_signal(sampling_frequency= self.sampling_frequency)
-        self.recovered_signal = SignalProcessor.recover_signal(self.sampled_points, self.sampling_frequency, method = self.method)
-        # self.difference_signal = SignalProcessor.calculate_difference(self.recovered_signal)
-        self.difference_signal = [[],[]]
-        self.frequency_domain = SignalProcessor.frequency_domain(self.recovered_signal, self.sampling_frequency)
-
-        self.timer = QTimer(self)
-        self.timer.setInterval(100)  # Update every 100ms
-        self.timer.timeout.connect(self.update_plot)
-
-
+        self.sampled_points = self.signal_processor.sample_signal(self.sampling_frequency)
+        self.recovered_signal = self.signal_processor.recover_signal(self.sampled_points, self.sampling_frequency, method = self.method)
+        # self.difference_signal = self.signal_processor.calculate_difference(self.recovered_signal)
+        self.frequency_domain = self.signal_processor.frequency_domain(self.recovered_signal, self.sampling_frequency)
+        self.update_plot()
+        # self.timer = QTimer(self)
+        # self.timer.setInterval(100)  # Update every 100ms
+        # self.timer.timeout.connect(self.update_plot)
 
     def update_plot(self):
-        self.curve_original_signal_plot = self.original_signal_plot.plot(*zip(*self.signal), pen=pg.mkPen('b', width = 2), name = 'Original Signal')
-        self.curve_reconstructed_signal_plot = self.reconstructed_signal_plot.plot(*zip(*self.recovered_signal), pen=pg.mkPen('b', width = 2), name = 'Recovered Signal')
-        self.curve_difference_signal_plot = self.difference_signal_plot.plot(*zip(*self.difference_signal), pen=pg.mkPen('b', width = 2), name = 'Error Signal')
-        self.curve_frequency_domain_plot = self.frequency_domain_plot.plot(*zip(*self.frequency_domain), pen=pg.mkPen('b', width = 2), name = 'Frequency Signal')
+    # Retrieve signals and calculate necessary components
+        self.signal = self.signal_loader.get_loaded_signal()
+        self.max_frequency = self.signal_loader.get_maximum_frequency()
+        if self.max_frequency == 0:
+            print("Error: Maximum frequency is zero. Please load a valid signal.")
+            return  # Exit early to avoid further errors
+
+        self.sampling_frequency = 2 * self.max_frequency
+        if self.sampling_frequency == 0:
+            print("Error: Sampling frequency is zero. Cannot proceed with plotting.")
+            return
+
+        self.method = self.reconstruction_combo.currentText()
+        print(self.sampling_frequency)
+        self.sampled_points = self.signal_processor.sample_signal(self.sampling_frequency)
+        self.recovered_signal = self.signal_processor.recover_signal(self.sampled_points, self.sampling_frequency, method=self.method)
+        # self.difference_signal = self.signal_processor.calculate_difference(self.recovered_signal)
+        self.frequency_domain = self.signal_processor.frequency_domain(self.recovered_signal, self.sampling_frequency)
+        print("Time Data:", self.signal[0])
+        print("Amplitude Data:", self.signal[1])
+
+        # Clear existing plots and set data as before
+        self.original_signal_plot.clear()
+        self.reconstructed_signal_plot.clear()
+        # self.difference_signal_plot.clear()
+        self.frequency_domain_plot.clear()
+
+        if self.signal.size > 0:
+            self.curve_original_signal_plot.setData(self.signal[0], self.signal[1])
+            self.original_signal_plot.plot(self.signal[0], self.signal[1])
+            # self.curve_original_signal_plot.show()
+            # self.original_signal_plot.show()
+        if self.recovered_signal.size > 0:
+            self.curve_reconstructed_signal_plot.setData(self.recovered_signal[0], self.recovered_signal[1])
+            self.reconstructed_signal_plot.plot(self.recovered_signal[0], self.recovered_signal[1])
+        # if self.difference_signal.size > 0:
+        #     self.curve_difference_signal_plot.setData(self.difference_signal[0], self.difference_signal[1])
+        if self.frequency_domain.size > 0:
+            self.curve_frequency_domain_plot.setData(self.frequency_domain[0], self.frequency_domain[1])
+            self.frequency_domain_plot.plot( self.frequency_domain[0], self.frequency_domain[1])
+
+        print("Updated plots with current signal data.")
+
         self.update_sampling_frequency(self.sampling_slider.value())
+
 
 
     def load_signal(self):
         file_path, _ = QFileDialog.getOpenFileName(None, "Open CSV File", "", "CSV Files (*.csv)")
-        SignalLoader.load_signal_from_file(file_path)
+        self.signal_loader.load_signal_from_file(file_path)
+        # self.update_plot()
 
     def compose_signal(self, expression):
         SignalMixer.components.clear()
@@ -119,24 +160,28 @@ class SamplingTheoryStudio(QMainWindow):
         if len(SignalMixer.components) > 0:
             # SignalMixer.composed_signal.clear()
             SignalMixer.add_sinusoidal_component()
-            SignalLoader.load_signal_from_mixer()
+            self.signal_loader.load_signal_from_mixer()
         print(f"Compose Signal functionality goes here {expression}")
+        # self.update_plot()
 
     def update_sampling_frequency(self, value):
         self.sampling_frequency = self.sampling_slider.value() * self.max_frequency
         # self.sampling_frequency = value * self.max_frequency
-        self.sampled_points = SignalProcessor.sample_signal(self.sampling_frequency)
+        self.sampled_points = self.signal_processor.sample_signal(self.sampling_frequency)
+        # self.update_plot()
         print(f"Sampling frequency updated to {value}")
         print(type(value))
 
     def update_noise_level(self, value):
-        SignalLoader.add_noise(value)
+        self.signal_loader.add_noise(value)
+        # self.update_plot()
         print(f"Noise level (SNR) updated to {value}")
 
     def change_reconstruction_method(self, index):
         self.method = self.reconstruction_combo[index]
-        self.recovered_signal = SignalProcessor.recover_signal(self.sampled_points, self.sampling_frequency, mehtod = self.method)
+        self.recovered_signal = self.signal_processor.recover_signal(self.sampled_points, self.sampling_frequency, mehtod = self.method)
         print(f"Reconstruction method changed to {index}")
+        # self.update_plot()
 
 
 if __name__ == "__main__":

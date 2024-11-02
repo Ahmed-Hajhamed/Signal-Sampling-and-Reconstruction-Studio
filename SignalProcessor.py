@@ -2,30 +2,39 @@ import sys
 import numpy as np
 from Reconstruction import Reconstruction
 from scipy.fft import dct
-import SignalLoader
-signal = SignalLoader.get_loaded_signal()
-class SignalProcessor:
+from SignalLoader import SignalLoader
+from scipy.interpolate import interp1d
+class  SignalProcessor:
     def __init__(self):
         super().__init__()
-        self.signal = SignalLoader.get_loaded_signal()
+        self.signal_loader = SignalLoader()
+        self.signal = self.signal_loader.get_loaded_signal()
 
-    def sample_signal(sampling_frequency, method="uniform", threshold=None):
+    def sample_signal(self, sampling_frequency, method="uniform", threshold=None):
         # This function uses different methods to take samples (uniform, non-uniform, or threshold sampling)
         """
         Creates samples from a signal based on the method chosen; uniform, non-uniform or threshold sampling.
         """
-        time_data = signal[0]
-        amplitude_data = signal[1]
+        time_data = self.signal[0]
+        amplitude_data = self.signal[1]
 
         if method == "uniform":
             if sampling_frequency is None:
-                raise ValueError("For uniform sampling, 'sampling_rate' must be specified.")
+                raise ValueError("Sampling frequency must be specified.")
             
-            # Sample uniformly by picking indices at intervals based on sampling rate
-            # sampling_interval = int(1 / sampling_frequency / (time_data[1] - time_data[0]))
-            sampling_interval = int(1 / sampling_frequency )   # samples per interval
-            sampled_indices = np.arange(0, len(time_data), sampling_interval)
-        
+            sampling_interval = 1 / sampling_frequency / (time_data[1] - time_data[0])  # samples per interval
+            sampled_points_time = np.arange(0, len(time_data)+1, sampling_interval)
+
+            # Calculate the sampled indices using np.searchsorted
+            sampled_indices = np.searchsorted(time_data, sampled_points_time)
+            
+            # To ensure we don't go out of bounds, you might want to filter sampled_indices
+            # Keep only valid indices
+            sampled_indices = sampled_indices[sampled_indices < len(time_data)]
+
+        # Now you can use sampled_indices to get sampled points from amplitude_data
+            # sampled_points = amplitude_data[sampled_indices]
+            
         elif method == "non-uniform":
             # Non-uniform sampling example (here, random selection)
             random_generator = np.random.default_rng(0)  # Set seed for reproducibility
@@ -47,14 +56,14 @@ class SignalProcessor:
 
         return np.array([sampled_points_time, sampled_points])
 
-    def recover_signal(sampled_points, sampling_frequency, sampled_indices = [], method = "whittaker Shannon", threshold = None):
+    def recover_signal(self, sampled_points, sampling_frequency, sampled_indices = [], method = "whittaker Shannon", threshold = None):
         # Reconstruct the signal using the specified method
         # Outputs a 2D numpy array
         """
         Reconstructs original signal from sampled points based on 3 methods; Niquist-Shannon,...
         """
         recovered_signal = None
-        duration = len(signal[0])
+        duration = len(self.signal[0])
         uniform_time_points = np.linspace(0, duration, 100 * duration)
         if method == 'Whittaker Shannon' :
             recovered_signal = Reconstruction.whittaker_shannon(sampled_points, sampling_frequency)
@@ -74,18 +83,19 @@ class SignalProcessor:
          
     
 
-    def calculate_difference(recovered_signal):
+    def calculate_difference(self, recovered_signal):
         # Calculate the difference between original and recovered signals
         # Outputs signals_difference in a 2D numpy array
         """
         Calculates the error in the recovered signal (difference between original and recovered signal).
         """
-        original_signal_time = signal[0]
-        original_signal_values = signal [1]
+        original_signal_time = self.signal[0]
+        original_signal_values = self.signal [1]
 
         recovered_signal_time = recovered_signal[0]
         recovered_signal_values = recovered_signal[1]
-
+        # Align recovered signal with original signal time
+        recovered_signal_values = self.align_signals(original_signal_time, original_signal_values, recovered_signal_time, recovered_signal_values)
         if not np.array_equal(original_signal_time, recovered_signal_time):
             raise ValueError("Time arrays of both signals must be equal")
 
@@ -96,7 +106,7 @@ class SignalProcessor:
         return signals_difference
     
 
-    def frequency_domain(recovered_signal, sampling_frequency):
+    def frequency_domain(self, recovered_signal, sampling_frequency):
         # Perform Fourier transform to check for aliasing
         """
         Returns the full frequency domain of recovered signal.
@@ -119,3 +129,10 @@ class SignalProcessor:
         frequency_domain = np.array([frequency_components, magnitude_components])
         
         return frequency_domain
+
+    def align_signals(self, original_time, original_values, recovered_time, recovered_values):
+        # Create an interpolation function based on the recovered signal
+        interp_function = interp1d(recovered_time, recovered_values, bounds_error=False, fill_value="extrapolate")
+        # Use it to generate recovered values at the original time points
+        aligned_recovered_values = interp_function(original_time)
+        return aligned_recovered_values
