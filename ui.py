@@ -4,7 +4,7 @@ from PyQt5.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QGridLayout,
     QPushButton, QComboBox, QSlider, QLabel, QListWidget, QLineEdit, QFileDialog
 )
-from PyQt5.QtCore import Qt, QTimer
+from PyQt5.QtCore import Qt
 import pyqtgraph as pg
 from PyQt5.QtGui import QIntValidator
 from qt_material import apply_stylesheet
@@ -92,7 +92,7 @@ class SamplingTheoryStudio(QMainWindow):
         self.max_frequency = self.signal_loader.get_maximum_frequency()
         self.sampling_frequency = 2 * self.max_frequency
         self.method = self.reconstruction_combo.currentText()
-        self.sampled_points = self.signal_processor.sample_signal(self.sampling_frequency)
+        self.sampled_points = self.signal_processor.sample_signal(self.signal, self.sampling_frequency)
         self.recovered_signal = self.signal_processor.recover_signal(self.sampled_points, self.sampling_frequency, method = self.method)
         # self.difference_signal = self.signal_processor.calculate_difference(self.recovered_signal)
         self.frequency_domain = self.signal_processor.frequency_domain(self.recovered_signal, self.sampling_frequency)
@@ -104,19 +104,13 @@ class SamplingTheoryStudio(QMainWindow):
     def update_plot(self):
     # Retrieve signals and calculate necessary components
         self.signal = self.signal_loader.get_loaded_signal()
-        self.max_frequency = self.signal_loader.get_maximum_frequency()
-        if self.max_frequency == 0:
-            print("Error: Maximum frequency is zero. Please load a valid signal.")
-            return  # Exit early to avoid further errors
-        self.update_sampling_frequency(self.sampling_slider.value())
-        self.sampling_frequency = 2 * self.max_frequency
         if self.sampling_frequency == 0:
             print("Error: Sampling frequency is zero. Cannot proceed with plotting.")
             return
 
         self.method = self.reconstruction_combo.currentText()
         print(self.sampling_frequency)
-        self.sampled_points = self.signal_processor.sample_signal(self.sampling_frequency)
+        self.sampled_points = self.signal_processor.sample_signal(self.signal, self.sampling_frequency)
         self.recovered_signal = self.signal_processor.recover_signal(self.sampled_points, self.sampling_frequency, method=self.method)
         # self.difference_signal = self.signal_processor.calculate_difference(self.recovered_signal)
         self.frequency_domain = self.signal_processor.frequency_domain(self.recovered_signal, self.sampling_frequency)
@@ -131,7 +125,7 @@ class SamplingTheoryStudio(QMainWindow):
             self.curve_original_signal_plot.setData(self.signal[0], self.signal[1])
             self.curve_original_signal_plot.setData(self.sampled_points[0], self.sampled_points[1])
             self.original_signal_plot.plot(self.signal[0], self.signal[1], color ='blue')
-            self.original_signal_plot.plot(self.sampled_points[0], self.sampled_points[1], pen=None, symbol='o', symbolSize=10,symbolBrush='b', alpha=0.7)
+            self.original_signal_plot.plot(self.sampled_points[0], self.sampled_points[1], pen=None, symbol='o', symbolSize=5,symbolBrush='b', alpha=0.7)
         if self.recovered_signal.size > 0:
             self.curve_reconstructed_signal_plot.setData(self.recovered_signal[0], self.recovered_signal[1])
             self.reconstructed_signal_plot.plot(self.recovered_signal[0], self.recovered_signal[1])
@@ -148,7 +142,7 @@ class SamplingTheoryStudio(QMainWindow):
     def load_signal(self):
         file_path, _ = QFileDialog.getOpenFileName(None, "Open CSV File", "", "CSV Files (*.csv)")
         self.signal_loader.load_signal_from_file(file_path)
-        # self.update_plot()
+        self.update_plot()
 
     def compose_signal(self, expression):
         SignalMixer.components.clear()
@@ -163,8 +157,8 @@ class SamplingTheoryStudio(QMainWindow):
     def update_sampling_frequency(self, value):
         # self.sampling_frequency = self.sampling_slider.value() * self.max_frequency
         self.sampling_frequency = value * self.max_frequency
-        self.sampled_points = self.signal_processor.sample_signal(self.sampling_frequency)
-        # self.update_plot()
+        self.sampled_points = self.signal_processor.sample_signal(self.signal, self.sampling_frequency)
+        self.update_plot()
         print(f"Sampling frequency updated to {value}")
         print(type(value))
 
@@ -177,7 +171,7 @@ class SamplingTheoryStudio(QMainWindow):
         self.method = self.reconstruction_combo[index]
         self.recovered_signal = self.signal_processor.recover_signal(self.sampled_points, self.sampling_frequency, mehtod = self.method)
         print(f"Reconstruction method changed to {index}")
-        # self.update_plot()
+        self.update_plot()
 
 
 if __name__ == "__main__":

@@ -8,15 +8,15 @@ class  SignalProcessor:
     def __init__(self):
         super().__init__()
         self.signal_loader = SignalLoader()
-        self.signal = self.signal_loader.get_loaded_signal()
+        # self.signal = self.signal_loader.get_loaded_signal()
 
-    def sample_signal(self, sampling_frequency, method="uniform", threshold=None):
+    def sample_signal(self, signal, sampling_frequency, method="uniform", threshold=None):
         # This function uses different methods to take samples (uniform, non-uniform, or threshold sampling)
         """
         Creates samples from a signal based on the method chosen; uniform, non-uniform or threshold sampling.
         """
-        time_data = self.signal[0]
-        amplitude_data = self.signal[1]
+        time_data = signal[0]
+        amplitude_data = signal[1]
 
         if method == "uniform":
             if sampling_frequency is None:

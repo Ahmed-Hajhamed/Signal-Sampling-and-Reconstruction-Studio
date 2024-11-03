@@ -5,6 +5,22 @@ from sklearn.linear_model import OrthogonalMatchingPursuit
 from scipy.fft import dct
 
 class Reconstruction:
+    # @staticmethod
+    # def whittaker_shannon(sampled_points, sampling_frequency):
+    #     # Reconstruct Signal
+    #     t = np.arange(sampled_points[0][0], sampled_points[-1][0], 1 / sampling_frequency)
+    #     x_vec = sampled_points[0]
+    #     y_vec = sampled_points[1]
+
+    #     # Whittaker–Shannon interpolation formula
+    #     y_interp = np.zeros_like(t)
+    #     for i, t_i in enumerate(t):
+    #         y_interp[i] = np.sum(y_vec * np.sinc((x_vec - t_i) * sampling_frequency))
+        
+    #     reconstructed_time = t
+    #     reconstructed_amplitude = y_interp
+    #     return np.array([reconstructed_time, reconstructed_amplitude])
+
     @staticmethod
     def whittaker_shannon(sampled_points, sampling_frequency):
         """
