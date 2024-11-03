@@ -55,9 +55,9 @@ class SamplingTheoryStudio(QMainWindow):
 
         self.sampling_label = QLabel("Sampling Frequency:")
         self.sampling_slider = QSlider(Qt.Horizontal)
-        self.sampling_slider.setMinimum(0)
-        self.sampling_slider.setMaximum(4)
-        self.sampling_slider.setValue(2)
+        self.sampling_slider.setMinimum(10)
+        self.sampling_slider.setMaximum(400)
+        self.sampling_slider.setValue(200)
 
         self.reconstruction_label = QLabel("Reconstruction Method:")
         self.reconstruction_combo = QComboBox()
@@ -97,9 +97,8 @@ class SamplingTheoryStudio(QMainWindow):
         # self.difference_signal = self.signal_processor.calculate_difference(self.recovered_signal)
         self.frequency_domain = self.signal_processor.frequency_domain(self.recovered_signal, self.sampling_frequency)
         self.update_plot()
-        # self.timer = QTimer(self)
-        # self.timer.setInterval(100)  # Update every 100ms
-        # self.timer.timeout.connect(self.update_plot)
+
+        self.check_line_edit_is_removed = False
 
     def update_plot(self):
     # Retrieve signals and calculate necessary components
@@ -137,30 +136,38 @@ class SamplingTheoryStudio(QMainWindow):
 
         # self.update_sampling_frequency(self.sampling_slider.value())
 
-
-
     def load_signal(self):
         file_path, _ = QFileDialog.getOpenFileName(None, "Open CSV File", "", "CSV Files (*.csv)")
         self.signal_loader.load_signal_from_file(file_path)
+        self.cos_sin_signal.setText("")
         self.update_plot()
 
     def compose_signal(self, expression):
+
+        if len(SignalMixer.components) > 0:
+            self.check_line_edit_is_removed = True
+
         SignalMixer.components.clear()
         SignalMixer.add_components(expression)
+
         if len(SignalMixer.components) > 0:
-            # SignalMixer.composed_signal.clear()
+
             SignalMixer.add_sinusoidal_component()
             self.signal_loader.load_signal_from_mixer()
-        print(f"Compose Signal functionality goes here {expression}")
-        # self.update_plot()
+
+        elif self.check_line_edit_is_removed and len(self.cos_sin_signal.text())==0:
+            self.signal_loader = SignalLoader()
+            self.check_line_edit_is_removed = False
+
+        self.update_plot()
 
     def update_sampling_frequency(self, value):
         # self.sampling_frequency = self.sampling_slider.value() * self.max_frequency
-        self.sampling_frequency = value * self.max_frequency
+        value = value/100
+        self.sampling_frequency = int(value * self.max_frequency)
         self.sampled_points = self.signal_processor.sample_signal(self.signal, self.sampling_frequency)
         self.update_plot()
-        print(f"Sampling frequency updated to {value}")
-        print(type(value))
+        # print(f"Sampling frequency updated to {value}")
 
     def update_noise_level(self, value):
         self.signal_loader.add_noise(value)
