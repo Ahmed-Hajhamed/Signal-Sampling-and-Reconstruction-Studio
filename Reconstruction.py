@@ -14,7 +14,7 @@ class Reconstruction:
         T = 1 / sampling_frequency
 
         # Duration of signal based on number of sampled points
-        duration = len(sampled_points) * T
+        duration = 2
 
         # Generate uniformly spaced time points for the reconstruction
         time_points = np.arange(0, duration, T)

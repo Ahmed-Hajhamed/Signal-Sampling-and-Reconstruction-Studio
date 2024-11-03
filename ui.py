@@ -108,7 +108,7 @@ class SamplingTheoryStudio(QMainWindow):
         if self.max_frequency == 0:
             print("Error: Maximum frequency is zero. Please load a valid signal.")
             return  # Exit early to avoid further errors
-
+        self.update_sampling_frequency(self.sampling_slider.value())
         self.sampling_frequency = 2 * self.max_frequency
         if self.sampling_frequency == 0:
             print("Error: Sampling frequency is zero. Cannot proceed with plotting.")
@@ -120,8 +120,6 @@ class SamplingTheoryStudio(QMainWindow):
         self.recovered_signal = self.signal_processor.recover_signal(self.sampled_points, self.sampling_frequency, method=self.method)
         # self.difference_signal = self.signal_processor.calculate_difference(self.recovered_signal)
         self.frequency_domain = self.signal_processor.frequency_domain(self.recovered_signal, self.sampling_frequency)
-        print("Time Data:", self.sampled_points[0])
-        print("Amplitude Data:", self.sampled_points[1])
 
         # Clear existing plots and set data as before
         self.original_signal_plot.clear()
@@ -166,7 +164,7 @@ class SamplingTheoryStudio(QMainWindow):
         # self.sampling_frequency = self.sampling_slider.value() * self.max_frequency
         self.sampling_frequency = value * self.max_frequency
         self.sampled_points = self.signal_processor.sample_signal(self.sampling_frequency)
-        self.update_plot()
+        # self.update_plot()
         print(f"Sampling frequency updated to {value}")
         print(type(value))
 

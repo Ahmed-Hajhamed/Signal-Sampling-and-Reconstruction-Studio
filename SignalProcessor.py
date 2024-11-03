@@ -17,15 +17,13 @@ class  SignalProcessor:
         """
         time_data = self.signal[0]
         amplitude_data = self.signal[1]
-        print(time_data)
-        print(len(time_data))
 
         if method == "uniform":
             if sampling_frequency is None:
                 raise ValueError("Sampling frequency must be specified.")
             
             sampling_interval = (1 / sampling_frequency )  # samples per interval
-            sampled_points_time = np.arange(0, len(time_data), sampling_interval)
+            sampled_points_time = np.arange(0, 2, sampling_interval)
 
             # Calculate the sampled indices using np.searchsorted
             sampled_indices = np.searchsorted(time_data, sampled_points_time)
@@ -59,15 +57,13 @@ class  SignalProcessor:
 
         return sampled_signal
 
-    def recover_signal(self, sampled_points, sampling_frequency, sampled_indices = [], method = "whittaker Shannon", threshold = None):
-        # Reconstruct the signal using the specified method
-        # Outputs a 2D numpy array
+    def recover_signal(self, sampled_points, sampling_frequency, sampled_indices = [], method = "Whittaker Shannon", threshold = None):
         """
         Reconstructs original signal from sampled points based on 3 methods; Niquist-Shannon,...
         """
         recovered_signal = None
-        duration = len(self.signal[0])
-        uniform_time_points = np.linspace(0, duration, 100 * duration)
+        duration = 2
+        uniform_time_points = np.arange(0, duration, 1 / sampling_frequency)
         if method == 'Whittaker Shannon' :
             recovered_signal = Reconstruction.whittaker_shannon(sampled_points, sampling_frequency)
 
