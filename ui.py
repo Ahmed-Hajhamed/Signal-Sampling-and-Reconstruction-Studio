@@ -120,8 +120,8 @@ class SamplingTheoryStudio(QMainWindow):
         self.recovered_signal = self.signal_processor.recover_signal(self.sampled_points, self.sampling_frequency, method=self.method)
         # self.difference_signal = self.signal_processor.calculate_difference(self.recovered_signal)
         self.frequency_domain = self.signal_processor.frequency_domain(self.recovered_signal, self.sampling_frequency)
-        print("Time Data:", self.signal[0])
-        print("Amplitude Data:", self.signal[1])
+        print("Time Data:", self.sampled_points[0])
+        print("Amplitude Data:", self.sampled_points[1])
 
         # Clear existing plots and set data as before
         self.original_signal_plot.clear()
@@ -131,9 +131,9 @@ class SamplingTheoryStudio(QMainWindow):
 
         if self.signal.size > 0:
             self.curve_original_signal_plot.setData(self.signal[0], self.signal[1])
-            self.original_signal_plot.plot(self.signal[0], self.signal[1])
-            # self.curve_original_signal_plot.show()
-            # self.original_signal_plot.show()
+            self.curve_original_signal_plot.setData(self.sampled_points[0], self.sampled_points[1])
+            self.original_signal_plot.plot(self.signal[0], self.signal[1], color ='blue')
+            self.original_signal_plot.plot(self.sampled_points[0], self.sampled_points[1], pen=None, symbol='o', symbolSize=10,symbolBrush='b', alpha=0.7)
         if self.recovered_signal.size > 0:
             self.curve_reconstructed_signal_plot.setData(self.recovered_signal[0], self.recovered_signal[1])
             self.reconstructed_signal_plot.plot(self.recovered_signal[0], self.recovered_signal[1])
@@ -142,8 +142,6 @@ class SamplingTheoryStudio(QMainWindow):
         if self.frequency_domain.size > 0:
             self.curve_frequency_domain_plot.setData(self.frequency_domain[0], self.frequency_domain[1])
             self.frequency_domain_plot.plot( self.frequency_domain[0], self.frequency_domain[1])
-
-        print("Updated plots with current signal data.")
 
         self.update_sampling_frequency(self.sampling_slider.value())
 

@@ -9,6 +9,14 @@ class SignalLoader():
         time_data = self.signal_data.iloc[:, 0].values
         amplitude_data = self.signal_data.iloc[:, 1].values
         self.signal_data = np.array([time_data, amplitude_data])
+                # Crop the signal to only the first second
+        first_second_indices = np.where(time_data <= 1)[0]  # Get indices where time is less than or equal to 1 second
+
+        if first_second_indices.size > 0:  # Check if there are any indices found
+             self.signal_data = self.signal_data[:, first_second_indices]  # Crop the signal data
+        else:
+            print("Warning: No data points found for the first second of the signal.")
+            
         self.maximum_freq = 30
 
 
@@ -18,6 +26,15 @@ class SignalLoader():
         time_data = self.signal_data.iloc[:, 0].values
         amplitude_data = self.signal_data.iloc[:, 1].values
         self.signal_data = np.array([time_data, amplitude_data])
+
+        # Crop the signal to only the first second
+        first_second_indices = np.where(time_data <= 1)[0]  # Get indices where time is less than or equal to 1 second
+
+        if first_second_indices.size > 0:  # Check if there are any indices found
+             self.signal_data = self.signal_data[:, first_second_indices]  # Crop the signal data
+        else:
+            print("Warning: No data points found for the first second of the signal.")
+
         self.maximum_freq = 1 / (2 * (time_data[1] - time_data[0]))
 
 

@@ -53,8 +53,9 @@ class  SignalProcessor:
         # Collect the sampled points
         sampled_points = amplitude_data[sampled_indices]
         sampled_points_time = time_data[sampled_indices]
+        sampled_signal = np.array([sampled_points_time, sampled_points])
 
-        return np.array([sampled_points_time, sampled_points])
+        return sampled_signal
 
     def recover_signal(self, sampled_points, sampling_frequency, sampled_indices = [], method = "whittaker Shannon", threshold = None):
         # Reconstruct the signal using the specified method
