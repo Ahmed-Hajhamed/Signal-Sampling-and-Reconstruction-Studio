@@ -17,13 +17,15 @@ class  SignalProcessor:
         """
         time_data = self.signal[0]
         amplitude_data = self.signal[1]
+        print(time_data)
+        print(len(time_data))
 
         if method == "uniform":
             if sampling_frequency is None:
                 raise ValueError("Sampling frequency must be specified.")
             
-            sampling_interval = 1 / sampling_frequency / (time_data[1] - time_data[0])  # samples per interval
-            sampled_points_time = np.arange(0, len(time_data)+1, sampling_interval)
+            sampling_interval = (1 / sampling_frequency )  # samples per interval
+            sampled_points_time = np.arange(0, len(time_data), sampling_interval)
 
             # Calculate the sampled indices using np.searchsorted
             sampled_indices = np.searchsorted(time_data, sampled_points_time)

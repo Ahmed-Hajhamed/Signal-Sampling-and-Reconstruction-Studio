@@ -143,7 +143,7 @@ class SamplingTheoryStudio(QMainWindow):
             self.curve_frequency_domain_plot.setData(self.frequency_domain[0], self.frequency_domain[1])
             self.frequency_domain_plot.plot( self.frequency_domain[0], self.frequency_domain[1])
 
-        self.update_sampling_frequency(self.sampling_slider.value())
+        # self.update_sampling_frequency(self.sampling_slider.value())
 
 
 
@@ -163,10 +163,10 @@ class SamplingTheoryStudio(QMainWindow):
         # self.update_plot()
 
     def update_sampling_frequency(self, value):
-        self.sampling_frequency = self.sampling_slider.value() * self.max_frequency
-        # self.sampling_frequency = value * self.max_frequency
+        # self.sampling_frequency = self.sampling_slider.value() * self.max_frequency
+        self.sampling_frequency = value * self.max_frequency
         self.sampled_points = self.signal_processor.sample_signal(self.sampling_frequency)
-        # self.update_plot()
+        self.update_plot()
         print(f"Sampling frequency updated to {value}")
         print(type(value))
 
