@@ -3,9 +3,7 @@ import re
 
 components = []
 composed_signal = [[0,0], [0,0]]
-# time = np.array([])
-sampling_rate =100 
-time = np.linspace(0, 1, int(sampling_rate))
+time = np.array([])
 
 
 def add_components(expression: str):
@@ -36,7 +34,7 @@ def create_signal(type_of_signal, frequency, amplitude):
     return signal
 
 
-def set_time(duration = 1):
+def set_time(duration):
     global time
     sampling_rate =100 * duration
     time = np.linspace(0, duration, int(sampling_rate))
