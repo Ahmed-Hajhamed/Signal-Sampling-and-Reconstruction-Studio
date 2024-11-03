@@ -71,7 +71,7 @@ class Reconstruction:
         # Solve for the sparse signal that best matches the measurements
         sparse_signal = linalg.lstsq(sampling_matrix, sampled_points)[0]
         sampling_matrix_rows = sampling_matrix[sampled_indices, :]
-        uniform_time_points = np.linspace(0, duration, 100 * duration)
+        uniform_time_points = np.arange(0, duration, 100 * duration)
 
         # # Retain only the top `sparsity_level` largest elements
         # idx = np.argsort(np.abs(sparse_signal))[-sparsity_level:]
@@ -88,11 +88,11 @@ class Reconstruction:
         return reconstructed_signal
 
     @staticmethod
-    def level_crossing_reconstruct(sampled_points, duration, threshold):
+    def level_crossing_reconstruct(sampled_points, duration, threshold:int):
         """
         Reconstructs a signal using Level-Crossing Sampling (LCS).
         """
-        uniform_time_points = np.linspace(0, duration, duration * 0.5)
+        uniform_time_points = np.arange(0, duration, duration * 0.5)
         frequency1 = 5  # Frequency of first sine wave
         frequency2 = 20  # Frequency of second sine wave
         sparse_signal = 0.5 * np.sin(2 * np.pi * frequency1 * uniform_time_points) + \

@@ -168,7 +168,7 @@ class SamplingTheoryStudio(QMainWindow):
         print(f"Noise level (SNR) updated to {value}")
 
     def change_reconstruction_method(self, index):
-        self.method = self.reconstruction_combo[index]
+        self.method = self.reconstruction_combo.currentText()
         self.recovered_signal = self.signal_processor.recover_signal(self.sampled_points, self.sampling_frequency, mehtod = self.method)
         print(f"Reconstruction method changed to {index}")
         self.update_plot()
