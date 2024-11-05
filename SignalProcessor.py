@@ -19,7 +19,7 @@ class  SignalProcessor:
             if sampling_frequency is None:
                 raise ValueError("Sampling frequency must be specified.")
             
-            sampling_interval = (1 / sampling_frequency )  # samples per interval
+            sampling_interval = (1 / sampling_frequency)  # samples per interval
             sampled_points_time = np.arange(0, 2, sampling_interval)
 
             # Calculate the sampled indices using np.searchsorted
@@ -69,7 +69,7 @@ class  SignalProcessor:
             recovered_signal = Reconstruction.fourier(sampled_points , sampling_frequency)
             # recovered_signal = Reconstruction.compressed_sensing_reconstruct(sampled_points, sampling_matrix, sampled_indices, duration)
 
-        elif method == 'Level Crossing' :
+        elif method == 'Level Crossing':
             recovered_signal = Reconstruction.level_crossing_reconstruct(sampled_points, duration, threshold)
     
         else:
@@ -84,64 +84,25 @@ class  SignalProcessor:
         # Outputs signals_difference in a 2D numpy array
         """
         Calculates the error in the recovered signal (difference between original and recovered signal).
-                """
-        # Example 2D signals with different lengths in both dimensions
-        signal1 = signal   # Shape (3, 2)
-        signal2 = recovered_signal   # Shape (2, 3)
+        #         """
 
-        # Step 1: Interpolate along the time dimension to make both signals have the same length
-        target_len = max(signal1.shape[0], signal2.shape[0])
+        original_signal_time = signal[0]
+        original_signal_values = signal[1]
 
-        # Interpolate signal1
-        interp_signal1 = interp1d(np.linspace(0, 1, signal1.shape[0]), signal1, axis=0, fill_value="extrapolate")
-        resized_signal1 = interp_signal1(np.linspace(0, 1, target_len))
+        recovered_signal_time = recovered_signal[0]
+        recovered_signal_values = recovered_signal[1]
+        # Align recovered signal with original signal time
+        recovered_signal_values = self.align_signals(original_signal_time, original_signal_values, recovered_signal_time, recovered_signal_values)
 
-        # Interpolate signal2
-        interp_signal2 = interp1d(np.linspace(0, 1, signal2.shape[0]), signal2, axis=0, fill_value="extrapolate")
-        resized_signal2 = interp_signal2(np.linspace(0, 1, target_len))
+        recovered_signal_values = np.pad(recovered_signal_values,
+                                         (0, len(original_signal_values) - len(recovered_signal_values)),
+                                         "constant")
 
-        # Step 2: Match the channel/feature dimension
-        # Adjust to the same number of channels by truncating or padding with zeros
-        target_channels = max(resized_signal1.shape[1], resized_signal2.shape[1])
+        magnitude_difference = np.abs(original_signal_values - recovered_signal_values)
 
-        # Pad signal1 if needed
-        if resized_signal1.shape[1] < target_channels:
-            resized_signal1 = np.pad(resized_signal1, ((0, 0), (0, target_channels - resized_signal1.shape[1])), mode='constant')
-        else:
-            resized_signal1 = resized_signal1[:, :target_channels]
-
-        # Pad signal2 if needed
-        if resized_signal2.shape[1] < target_channels:
-            resized_signal2 = np.pad(resized_signal2, ((0, 0), (0, target_channels - resized_signal2.shape[1])), mode='constant')
-        else:
-            resized_signal2 = resized_signal2[:, :target_channels]
-
-        # Step 3: Calculate the pointwise magnitude difference
-        difference_signal = resized_signal1 - resized_signal2
-        magnitude_difference = np.linalg.norm(difference_signal, axis=1)
-
-        # Output time vs magnitude difference as a 2D array
-        output_signal = np.hstack((np.arange(target_len).reshape(-1, 1), magnitude_difference.reshape(-1, 1)))
-
-        return output_signal
-            
-
-        # original_signal_time = signal[0]
-        # original_signal_values = signal [1]
-
-        # recovered_signal_time = recovered_signal[0]
-        # recovered_signal_values = recovered_signal[1]
-        # # Align recovered signal with original signal time
-        # # recovered_signal_values = self.align_signals(original_signal_time, original_signal_values, recovered_signal_time, recovered_signal_values)
-        # if not np.array_equal(original_signal_time, recovered_signal_time):
-        #     raise ValueError("Time arrays of both signals must be equal")
-        # print(original_signal_values,".....", recovered_signal_values)
-        # magnitude_difference = np.abs(original_signal_values - recovered_signal_values)
-
-        # signals_difference = np.array([original_signal_time, magnitude_difference])
+        signals_difference = np.array([original_signal_time, magnitude_difference])
         
-        # return signals_difference
-    
+        return signals_difference
 
     def frequency_domain(self, recovered_signal, sampling_frequency):
         # Perform Fourier transform to check for aliasing

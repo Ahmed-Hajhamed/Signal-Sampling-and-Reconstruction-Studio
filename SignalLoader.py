@@ -18,6 +18,7 @@ class SignalLoader:
             print("Warning: No data points found for the first second of the signal.")
 
         self.maximum_freq = 30
+        self.noisy_signal = None
 
     def load_signal_from_file(self, filepath):
         if filepath:
@@ -54,13 +55,16 @@ class SignalLoader:
 
         return self.maximum_freq
 
-    def add_noise(self, signal, snr):
+    def add_noise(self, snr):
         # Add noise to the signal based on SNR
+        signal = self.signal_data[1]
+        if self.noisy_signal is not None:
+            self.signal_data[1] = signal - self.noisy_signal
         signal_power = np.mean(signal ** 2)
         noise_power = signal_power / snr
         random_generator = np.random.default_rng(1)
-        noisy_signal = np.sqrt(noise_power) * random_generator.normal(size=signal.shape)
-        return noisy_signal
+        self.noisy_signal = np.sqrt(noise_power) * random_generator.normal(size=signal.shape)
+        self.signal_data[1] = signal + self.noisy_signal
 
     def get_loaded_signal(self):
         return self.signal_data

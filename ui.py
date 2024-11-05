@@ -2,7 +2,7 @@ import sys
 import numpy as np
 from PyQt5.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QGridLayout,
-    QPushButton, QComboBox, QSlider, QLabel, QListWidget, QLineEdit, QFileDialog
+    QPushButton, QComboBox, QSlider, QLabel, QMessageBox, QLineEdit, QFileDialog
 )
 from PyQt5.QtCore import Qt
 import pyqtgraph as pg
@@ -49,9 +49,9 @@ class SamplingTheoryStudio(QMainWindow):
         self.load_button = QPushButton("Load Signal")
         self.compose_button = QLabel("Compose Signal:")
 
-        self.cos_sin_signal = QLineEdit()
-        self.cos_sin_signal.setPlaceholderText("Enter an expression")
-        self.cos_sin_signal.setFixedWidth(150)
+        self.cos_sin_expression = QLineEdit()
+        self.cos_sin_expression.setPlaceholderText("Enter an expression")
+        self.cos_sin_expression.setFixedWidth(150)
 
         self.sampling_label = QLabel("Sampling Frequency:")
         self.sampling_slider = QSlider(Qt.Horizontal)
@@ -64,14 +64,15 @@ class SamplingTheoryStudio(QMainWindow):
         self.reconstruction_combo.addItems(
             ["Whittaker Shannon", "Compressed Sensing", "Level Crossing"])
         self.reconstruction_combo.setStyleSheet("QComboBox { color: white; }")
+
         self.noise_label = QLabel("Noise Level (SNR):")
         self.noise_input = QLineEdit()
+        self.noise_input.setPlaceholderText("1-9999")
         self.noise_input.setValidator(QIntValidator(1, 1000))
-        self.noise_input.setText("0")
 
         control_layout.addWidget(self.load_button)
         control_layout.addWidget(self.compose_button)
-        control_layout.addWidget(self.cos_sin_signal)
+        control_layout.addWidget(self.cos_sin_expression)
         control_layout.addWidget(self.sampling_label)
         control_layout.addWidget(self.sampling_slider)
         control_layout.addWidget(self.reconstruction_label)
@@ -85,7 +86,8 @@ class SamplingTheoryStudio(QMainWindow):
         main_widget.setLayout(main_layout)
 
         self.load_button.clicked.connect(self.load_signal)
-        self.cos_sin_signal.textChanged.connect(self.compose_signal)
+        self.cos_sin_expression.textChanged.connect(self.compose_signal)
+        self.noise_input.textChanged.connect(self.update_noise_level)
         self.sampling_slider.valueChanged.connect(self.update_sampling_frequency)
         self.reconstruction_combo.currentIndexChanged.connect(self.change_reconstruction_method)
 
@@ -99,7 +101,7 @@ class SamplingTheoryStudio(QMainWindow):
         self.frequency_domain = self.signal_processor.frequency_domain(self.recovered_signal, self.sampling_frequency)
         self.update_plot()
 
-        self.check_line_edit_is_removed = False
+        self.compose_line_edit_is_removed = False
 
     def update_plot(self):
     # Retrieve signals and calculate necessary components
@@ -140,13 +142,13 @@ class SamplingTheoryStudio(QMainWindow):
     def load_signal(self):
         file_path, _ = QFileDialog.getOpenFileName(None, "Open CSV File", "", "CSV Files (*.csv)")
         self.signal_loader.load_signal_from_file(file_path)
-        self.cos_sin_signal.setText("")
+        self.cos_sin_expression.setText("")
         self.update_plot()
 
     def compose_signal(self, expression):
 
         if len(SignalMixer.components) > 0:
-            self.check_line_edit_is_removed = True
+            self.compose_line_edit_is_removed = True
 
         SignalMixer.components.clear()
         SignalMixer.add_components(expression)
@@ -156,9 +158,9 @@ class SamplingTheoryStudio(QMainWindow):
             SignalMixer.add_sinusoidal_component()
             self.signal_loader.load_signal_from_mixer()
 
-        elif self.check_line_edit_is_removed and len(self.cos_sin_signal.text())==0:
+        elif self.compose_line_edit_is_removed and len(self.cos_sin_expression.text())==0:
             self.signal_loader = SignalLoader()
-            self.check_line_edit_is_removed = False
+            self.compose_line_edit_is_removed = False
 
         self.update_plot()
 
@@ -169,9 +171,19 @@ class SamplingTheoryStudio(QMainWindow):
         self.update_plot()
 
     def update_noise_level(self, value):
-        self.signal_loader.add_noise(value)
-        # self.update_plot()
-        print(f"Noise level (SNR) updated to {value}")
+        if value != "":
+            value = int(value)
+            if value == 0:
+                QMessageBox.warning(self,  "Invalid Input", "Please enter a number between 1 and 1000, not 0.")
+                self.noise_input.clear()
+                return
+            self.signal_loader.add_noise(value)
+        else:
+            if self.signal_loader.noisy_signal is not None:
+                self.signal_loader.signal_data[1] = self.signal_loader.signal_data[1] - self.signal_loader.noisy_signal
+                self.signal_loader.noisy_signal = None
+
+        self.update_plot()
 
     def change_reconstruction_method(self, index):
         self.method = self.reconstruction_combo.currentText()
