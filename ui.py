@@ -42,8 +42,8 @@ class SamplingTheoryStudio(QMainWindow):
         self.original_signal_plot.show()
 
         graph_layout.addWidget(self.original_signal_plot, 0, 0)
-        graph_layout.addWidget(self.reconstructed_signal_plot, 0, 1)
-        graph_layout.addWidget(self.difference_signal_plot, 1, 0)
+        graph_layout.addWidget(self.reconstructed_signal_plot, 1, 0)
+        graph_layout.addWidget(self.difference_signal_plot, 0, 1)
         graph_layout.addWidget(self.frequency_domain_plot, 1, 1)
 
         self.load_button = QPushButton("Load Signal")
@@ -94,7 +94,7 @@ class SamplingTheoryStudio(QMainWindow):
         self.method = self.reconstruction_combo.currentText()
         self.sampled_points = self.signal_processor.sample_signal(self.signal, self.sampling_frequency)
         self.recovered_signal = self.signal_processor.recover_signal(self.sampled_points, self.sampling_frequency, method = self.method)
-        # self.difference_signal = self.signal_processor.calculate_difference(self.recovered_signal)
+        self.difference_signal = self.signal_processor.calculate_difference(self.signal, self.recovered_signal)
         self.frequency_domain = self.signal_processor.frequency_domain(self.recovered_signal, self.sampling_frequency)
         self.update_plot()
 
@@ -111,13 +111,13 @@ class SamplingTheoryStudio(QMainWindow):
         print(self.sampling_frequency)
         self.sampled_points = self.signal_processor.sample_signal(self.signal, self.sampling_frequency)
         self.recovered_signal = self.signal_processor.recover_signal(self.sampled_points, self.sampling_frequency, method=self.method)
-        # self.difference_signal = self.signal_processor.calculate_difference(self.recovered_signal)
+        self.difference_signal = self.signal_processor.calculate_difference(self.signal, self.recovered_signal)
         self.frequency_domain = self.signal_processor.frequency_domain(self.recovered_signal, self.sampling_frequency)
 
         # Clear existing plots and set data as before
         self.original_signal_plot.clear()
         self.reconstructed_signal_plot.clear()
-        # self.difference_signal_plot.clear()
+        self.difference_signal_plot.clear()
         self.frequency_domain_plot.clear()
 
         if self.signal.size > 0:
@@ -128,8 +128,9 @@ class SamplingTheoryStudio(QMainWindow):
         if self.recovered_signal.size > 0:
             self.curve_reconstructed_signal_plot.setData(self.recovered_signal[0], self.recovered_signal[1])
             self.reconstructed_signal_plot.plot(self.recovered_signal[0], self.recovered_signal[1])
-        # if self.difference_signal.size > 0:
-        #     self.curve_difference_signal_plot.setData(self.difference_signal[0], self.difference_signal[1])
+        if self.difference_signal.size > 0:
+            self.curve_difference_signal_plot.setData(self.difference_signal[0], self.difference_signal[1])
+            self.difference_signal_plot.plot(self.difference_signal[0], self.difference_signal[1])
         if self.frequency_domain.size > 0:
             self.curve_frequency_domain_plot.setData(self.frequency_domain[0], self.frequency_domain[1])
             self.frequency_domain_plot.plot( self.frequency_domain[0], self.frequency_domain[1])
@@ -162,12 +163,10 @@ class SamplingTheoryStudio(QMainWindow):
         self.update_plot()
 
     def update_sampling_frequency(self, value):
-        # self.sampling_frequency = self.sampling_slider.value() * self.max_frequency
         value = value/100
         self.sampling_frequency = int(value * self.max_frequency)
         self.sampled_points = self.signal_processor.sample_signal(self.signal, self.sampling_frequency)
         self.update_plot()
-        # print(f"Sampling frequency updated to {value}")
 
     def update_noise_level(self, value):
         self.signal_loader.add_noise(value)

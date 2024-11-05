@@ -27,7 +27,7 @@ class Reconstruction:
         Perform Whittaker-Shannon reconstruction of a signal from uniformly taken samples.
         """
         # Calculate sampling interval T
-        T = 1 / sampling_frequency
+        T = (1 / sampling_frequency)
 
         # Duration of signal based on number of sampled points
         duration = 2
