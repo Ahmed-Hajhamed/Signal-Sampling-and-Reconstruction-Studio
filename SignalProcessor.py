@@ -2,13 +2,10 @@ import sys
 import numpy as np
 from Reconstruction import Reconstruction
 from scipy.fft import dct
-from SignalLoader import SignalLoader
 from scipy.interpolate import interp1d
 class  SignalProcessor:
     def __init__(self):
         super().__init__()
-        self.signal_loader = SignalLoader()
-        # self.signal = self.signal_loader.get_loaded_signal()
 
     def sample_signal(self, signal, sampling_frequency, method="uniform", threshold=None):
         # This function uses different methods to take samples (uniform, non-uniform, or threshold sampling)
@@ -69,8 +66,8 @@ class  SignalProcessor:
 
         elif method == 'Compressed Sensing' :
             sampling_matrix = dct(np.eye(len(uniform_time_points)), axis=0, norm='ortho')
-
-            recovered_signal = Reconstruction.compressed_sensing_reconstruct(sampled_points, sampling_matrix, sampled_indices, duration,)
+            recovered_signal = Reconstruction.fourier(sampled_points , sampling_frequency)
+            # recovered_signal = Reconstruction.compressed_sensing_reconstruct(sampled_points, sampling_matrix, sampled_indices, duration)
 
         elif method == 'Level Crossing' :
             recovered_signal = Reconstruction.level_crossing_reconstruct(sampled_points, duration, threshold)
@@ -125,8 +122,6 @@ class  SignalProcessor:
 
         # Output time vs magnitude difference as a 2D array
         output_signal = np.hstack((np.arange(target_len).reshape(-1, 1), magnitude_difference.reshape(-1, 1)))
-
-        print("Time vs Magnitude Difference Signal:\n", output_signal)
 
         return output_signal
             

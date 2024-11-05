@@ -3,6 +3,11 @@ from scipy import linalg
 import scipy.interpolate as interp
 from sklearn.linear_model import OrthogonalMatchingPursuit
 from scipy.fft import dct
+import numpy as np
+from scipy.fft import fft, ifft, fftfreq
+import pyqtgraph as pg
+from PyQt5 import QtWidgets
+from scipy.interpolate import CubicSpline
 
 class Reconstruction:
     # @staticmethod
@@ -49,6 +54,56 @@ class Reconstruction:
             reconstructed_amplitudes[i] = np.sum(sampled_amplitudes * sinc_terms)
         reconstructed_signal = np.array([time_points, reconstructed_amplitudes])
         return reconstructed_signal
+    
+    @staticmethod
+    def fourier(sampled_points, sampling_frequency):
+
+                # Original signal
+        signal = sampled_points[1]
+        time = np.linspace(0, 1, len(signal))
+
+        # Fourier transform, zero-padding, and inverse transform for interpolation
+        N = len(signal)
+        signal_fft = fft(signal)
+        # padded_fft = np.pad(signal_fft, (0, N), 'constant')
+        # reconstructed_signal = np.real(ifft(padded_fft))
+
+        freq = fftfreq(N, d=(time[1] - time[0]))
+        cutoff_freq = sampling_frequency/2 # Adjust based on signal content
+        signal_fft[np.abs(freq) > cutoff_freq] = 0
+        reconstructed_signal = np.real(ifft(signal_fft))
+
+        # New time points for the reconstructed signal
+        new_time = np.linspace(time[0], time[-1], len(reconstructed_signal))
+        return np.array([new_time, reconstructed_signal])
+        # # spline = CubicSpline(time, signal)
+        # # reconstructed_signal = spline(new_time)
+
+        # Create PyQtGraph application and window
+        app = QtWidgets.QApplication([])
+        win = pg.GraphicsLayoutWidget(show=True, title="Signal Reconstruction")
+        win.resize(800, 400)
+
+
+        # Plot 1: Original sample points as dots
+        p1 = win.addPlot(title="Original Samples")
+        p1.plot(time, signal, pen=None, symbol='o', symbolSize=8, symbolBrush='r')
+        p1.setLabel('left', 'Magnitude')
+        p1.setLabel('bottom', 'Time')
+        p1.showGrid(x=True, y=True)
+
+        # Plot 2: Reconstructed signal with original samples as dots
+        win.nextRow()
+        p2 = win.addPlot(title="Reconstructed Signal with Original Samples")
+        p2.plot(new_time, reconstructed_signal, pen='b')  # Reconstructed signal line
+        p2.plot(time, signal, pen=None, symbol='o', symbolSize=8, symbolBrush='r')  # Original samples as dots
+        p2.setLabel('left', 'Magnitude')
+        p2.setLabel('bottom', 'Time')
+        p2.showGrid(x=True, y=True)
+
+        # Start the PyQt application
+        QtWidgets.QApplication.instance().exec_()
+
 
     @staticmethod
     def compressed_sensing_reconstruct(sampled_points, sampling_matrix, sampled_indices, duration):

@@ -63,6 +63,7 @@ class SamplingTheoryStudio(QMainWindow):
         self.reconstruction_combo = QComboBox()
         self.reconstruction_combo.addItems(
             ["Whittaker Shannon", "Compressed Sensing", "Level Crossing"])
+        self.reconstruction_combo.setStyleSheet("QComboBox { color: white; }")
         self.noise_label = QLabel("Noise Level (SNR):")
         self.noise_input = QLineEdit()
         self.noise_input.setValidator(QIntValidator(1, 1000))
@@ -108,9 +109,8 @@ class SamplingTheoryStudio(QMainWindow):
             return
 
         self.method = self.reconstruction_combo.currentText()
-        print(self.sampling_frequency)
         self.sampled_points = self.signal_processor.sample_signal(self.signal, self.sampling_frequency)
-        self.recovered_signal = self.signal_processor.recover_signal(self.sampled_points, self.sampling_frequency, method=self.method)
+        self.recovered_signal = self.signal_processor.recover_signal(self.sampled_points, self.sampling_frequency, [], method=self.method)
         self.difference_signal = self.signal_processor.calculate_difference(self.signal, self.recovered_signal)
         self.frequency_domain = self.signal_processor.frequency_domain(self.recovered_signal, self.sampling_frequency)
 
@@ -175,7 +175,7 @@ class SamplingTheoryStudio(QMainWindow):
 
     def change_reconstruction_method(self, index):
         self.method = self.reconstruction_combo.currentText()
-        self.recovered_signal = self.signal_processor.recover_signal(self.sampled_points, self.sampling_frequency, mehtod = self.method)
+        self.recovered_signal = self.signal_processor.recover_signal(self.sampled_points, self.sampling_frequency, [], self.method)
         print(f"Reconstruction method changed to {index}")
         self.update_plot()
 
