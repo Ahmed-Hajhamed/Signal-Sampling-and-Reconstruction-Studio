@@ -62,7 +62,7 @@ class Reconstruction:
         signal = sampled_points[1]
         time = np.linspace(0, 1, len(signal))
 
-        # Fourier transform, zero-padding, and inverse transform for interpolation
+        # Fourier transform, zero-padding, and inverse transform
         N = len(signal)
         signal_fft = fft(signal)
         # padded_fft = np.pad(signal_fft, (0, N), 'constant')
