@@ -49,6 +49,7 @@ class SamplingTheoryStudio(QMainWindow):
 
         self.cos_sin_expression = QLineEdit()
         self.cos_sin_expression.setPlaceholderText("Enter an expression")
+        self.cos_sin_expression.setStyleSheet("color : 'white'")
         self.cos_sin_expression.setFixedWidth(150)
 
         self.sampling_label = QLabel("Sampling Frequency:")
@@ -73,6 +74,7 @@ class SamplingTheoryStudio(QMainWindow):
         self.noise_label = QLabel("Noise Level (SNR):")
         self.noise_input = QLineEdit()
         self.noise_input.setPlaceholderText("1-9999")
+        self.noise_input.setStyleSheet("color : 'white'")
         self.noise_input.setValidator(QIntValidator(1, 1000))
 
         self.load_button.clicked.connect(self.load_signal)

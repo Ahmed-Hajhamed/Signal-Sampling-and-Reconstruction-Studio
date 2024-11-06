@@ -82,7 +82,7 @@ class  SignalProcessor:
         return signals_difference
 
     @staticmethod
-    def frequency_domain(self, recovered_signal, sampling_frequency):
+    def frequency_domain(recovered_signal, sampling_frequency):
         # Perform Fourier transform to check for aliasing
         """
         Returns the full frequency domain of recovered signal.
