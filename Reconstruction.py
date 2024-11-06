@@ -58,9 +58,9 @@ class Reconstruction:
     @staticmethod
     def fourier(sampled_points, sampling_frequency):
 
-                # Original signal
+        # Original signal
         signal = sampled_points[1]
-        time = np.linspace(0, 1, len(signal))
+        time = np.linspace(0, 2, len(signal))
 
         # Fourier transform, zero-padding, and inverse transform
         N = len(signal)
@@ -79,31 +79,21 @@ class Reconstruction:
         # # spline = CubicSpline(time, signal)
         # # reconstructed_signal = spline(new_time)
 
-        # Create PyQtGraph application and window
-        app = QtWidgets.QApplication([])
-        win = pg.GraphicsLayoutWidget(show=True, title="Signal Reconstruction")
-        win.resize(800, 400)
+    @staticmethod
+    def spline (sampled_points, sampling_frequency):
+        # time = np.arange(0, 2, 1/sampling_frequency)
+        time = np.linspace(0, 2, len(sampled_points))
+        N = len(sampled_points)
+        signal_fft = fft(sampled_points)
 
+        padded_fft = np.pad(signal_fft, (0, N), 'constant')
+        reconstructed_signal = np.real(ifft(padded_fft))
 
-        # Plot 1: Original sample points as dots
-        p1 = win.addPlot(title="Original Samples")
-        p1.plot(time, signal, pen=None, symbol='o', symbolSize=8, symbolBrush='r')
-        p1.setLabel('left', 'Magnitude')
-        p1.setLabel('bottom', 'Time')
-        p1.showGrid(x=True, y=True)
-
-        # Plot 2: Reconstructed signal with original samples as dots
-        win.nextRow()
-        p2 = win.addPlot(title="Reconstructed Signal with Original Samples")
-        p2.plot(new_time, reconstructed_signal, pen='b')  # Reconstructed signal line
-        p2.plot(time, signal, pen=None, symbol='o', symbolSize=8, symbolBrush='r')  # Original samples as dots
-        p2.setLabel('left', 'Magnitude')
-        p2.setLabel('bottom', 'Time')
-        p2.showGrid(x=True, y=True)
-
-        # Start the PyQt application
-        QtWidgets.QApplication.instance().exec_()
-
+        spline = CubicSpline(time, sampled_points)
+        new_time = np.linspace(time[0], time[-1], len(reconstructed_signal))
+        reconstructed_signal = spline(time)
+        
+        return np.array([time, reconstructed_signal])
 
     @staticmethod
     def compressed_sensing_reconstruct(sampled_points, sampling_matrix, sampled_indices, duration):
