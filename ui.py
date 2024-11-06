@@ -23,6 +23,7 @@ class SamplingTheoryStudio(QMainWindow):
 
         main_layout = QVBoxLayout()
         graph_layout = QGridLayout()
+        v_layout_for_label_of_frequencies = QVBoxLayout()
         control_layout = QHBoxLayout()
 
         self.original_signal_plot = pg.PlotWidget(title="Original Signal")
@@ -55,6 +56,8 @@ class SamplingTheoryStudio(QMainWindow):
         self.sampling_slider.setMinimum(10)
         self.sampling_slider.setMaximum(400)
         self.sampling_slider.setValue(200)
+        self.sampling_frequency_label= QLabel("")
+        self.max_frequency_label = QLabel("")
 
         self.reconstruction_label = QLabel("Reconstruction Method:")
         self.reconstruction_combo = QComboBox()
@@ -72,6 +75,9 @@ class SamplingTheoryStudio(QMainWindow):
         control_layout.addWidget(self.cos_sin_expression)
         control_layout.addWidget(self.sampling_label)
         control_layout.addWidget(self.sampling_slider)
+        v_layout_for_label_of_frequencies.addWidget(self.max_frequency_label)
+        v_layout_for_label_of_frequencies.addWidget(self.sampling_frequency_label)
+        control_layout.addLayout(v_layout_for_label_of_frequencies)
         control_layout.addWidget(self.reconstruction_label)
         control_layout.addWidget(self.reconstruction_combo)
         control_layout.addWidget(self.noise_label)
@@ -164,6 +170,8 @@ class SamplingTheoryStudio(QMainWindow):
         self.sampling_frequency = int(value * self.max_frequency)
         self.sampled_points = self.signal_processor.sample_signal(self.signal, self.sampling_frequency)
         self.update_plot()
+        self.max_frequency_label.setText(f"{value} f_max")
+        self.sampling_frequency_label.setText(f"f_sampling={self.sampling_frequency}Hz")
 
     def update_noise_level(self, value):
         if value != "":
