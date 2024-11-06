@@ -61,7 +61,14 @@ class SamplingTheoryStudio(QMainWindow):
         self.reconstruction_combo = QComboBox()
         self.reconstruction_combo.addItems(
             ["Whittaker Shannon", "Fourier", "Spline"])
-        self.reconstruction_combo.setStyleSheet("QComboBox { color: black; }")
+        self.reconstruction_combo.setStyleSheet("""
+                                                    QComboBox {
+                                                        color: 'white'; 
+                                                    }
+                                                    QComboBox QAbstractItemView {
+                                                        color: 'white';
+                                                    }
+                                                """)
 
         self.noise_label = QLabel("Noise Level (SNR):")
         self.noise_input = QLineEdit()
@@ -194,4 +201,3 @@ class SamplingTheoryStudio(QMainWindow):
         self.method = self.reconstruction_combo.currentText()
         self.recovered_signal = self.signal_processor.recover_signal(self.sampled_points, self.sampling_frequency, self.method)
         self.update_plot()
-        
