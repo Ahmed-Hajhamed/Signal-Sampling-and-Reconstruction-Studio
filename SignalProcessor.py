@@ -17,21 +17,23 @@ class  SignalProcessor:
 
         if sampling_frequency is None:
             raise ValueError("Sampling frequency must be specified.")
-        
-        sampling_interval = (1 / sampling_frequency)  # samples per interval
-        sampled_points_time = np.arange(0, 2, sampling_interval)
+        if sampling_frequency != 0:
+            sampling_interval = (1 / sampling_frequency)  # samples per interval
+            sampled_points_time = np.arange(0, 2, sampling_interval)
 
-        # Calculate the sampled indices using np.searchsorted
-        sampled_indices = np.searchsorted(time_data, sampled_points_time)
-        
-        # To ensure we don't go out of bounds, you might want to filter sampled_indices
-        # Keep only valid indices
-        sampled_indices = sampled_indices[sampled_indices < len(time_data)]
+            # Calculate the sampled indices using np.searchsorted
+            sampled_indices = np.searchsorted(time_data, sampled_points_time)
 
-        # Collect the sampled points
-        sampled_points = amplitude_data[sampled_indices]
-        sampled_points_time = time_data[sampled_indices]
-        sampled_signal = np.array([sampled_points_time, sampled_points])
+            # To ensure we don't go out of bounds, you might want to filter sampled_indices
+            # Keep only valid indices
+            sampled_indices = sampled_indices[sampled_indices < len(time_data)]
+
+            # Collect the sampled points
+            sampled_points = amplitude_data[sampled_indices]
+            sampled_points_time = time_data[sampled_indices]
+            sampled_signal = np.array([sampled_points_time, sampled_points])
+        else:
+            sampled_signal = np.array([[], []])
 
         return sampled_signal
 

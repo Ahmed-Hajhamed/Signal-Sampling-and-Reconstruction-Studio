@@ -119,6 +119,7 @@ class SamplingTheoryStudio(QMainWindow):
 
     def update_plot(self):
         self.signal = self.signal_loader.get_loaded_signal()
+        self.max_frequency = self.signal_loader.get_maximum_frequency()
         if self.sampling_frequency == 0:
             print("Error: Sampling frequency is zero. Cannot proceed with plotting.")
             return
