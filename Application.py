@@ -3,7 +3,6 @@ import sys
 from PyQt5.QtWidgets import QApplication
 from qt_material import apply_stylesheet
 
-# test of github to fix the problem
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
@@ -11,4 +10,3 @@ if __name__ == "__main__":
     apply_stylesheet(app, theme='dark_teal.xml')
     window.show()
     sys.exit(app.exec_())
-# zeyad is from Yemen, Adan
