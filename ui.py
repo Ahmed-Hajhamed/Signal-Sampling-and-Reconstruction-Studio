@@ -56,19 +56,39 @@ class SamplingTheoryStudio(QMainWindow):
         self.sampling_slider.setMinimum(10)
         self.sampling_slider.setMaximum(400)
         self.sampling_slider.setValue(200)
-        self.sampling_frequency_label= QLabel("")
-        self.max_frequency_label = QLabel("")
 
         self.reconstruction_label = QLabel("Reconstruction Method:")
         self.reconstruction_combo = QComboBox()
         self.reconstruction_combo.addItems(
             ["Whittaker Shannon", "Fourier", "Spline"])
-        self.reconstruction_combo.setStyleSheet("QComboBox { color: white; }")
+        self.reconstruction_combo.setStyleSheet("QComboBox { color: black; }")
 
         self.noise_label = QLabel("Noise Level (SNR):")
         self.noise_input = QLineEdit()
         self.noise_input.setPlaceholderText("1-9999")
         self.noise_input.setValidator(QIntValidator(1, 1000))
+
+        self.load_button.clicked.connect(self.load_signal)
+        self.cos_sin_expression.textChanged.connect(self.compose_signal)
+        self.noise_input.textChanged.connect(self.update_noise_level)
+        self.sampling_slider.valueChanged.connect(self.update_sampling_frequency)
+        self.reconstruction_combo.currentIndexChanged.connect(self.change_reconstruction_method)
+
+        self.signal= self.signal_loader.get_loaded_signal()
+        self.max_frequency = self.signal_loader.get_maximum_frequency()
+        self.sampling_frequency = 2 * self.max_frequency
+        self.method = self.reconstruction_combo.currentText()
+        self.sampled_points = self.signal_processor.sample_signal(self.signal, self.sampling_frequency)
+        self.recovered_signal = self.signal_processor.recover_signal(self.sampled_points, self.sampling_frequency, method = self.method)
+        self.difference_signal = self.signal_processor.calculate_difference(self.signal, self.recovered_signal)
+        self.frequency_domain = self.signal_processor.frequency_domain(self.recovered_signal, self.sampling_frequency)
+
+        self.sampling_frequency_label= QLabel(f"F_sampling={self.sampling_frequency}Hz")
+        self.max_frequency_label = QLabel(f"{2} F_max")
+
+        self.update_plot()
+
+        self.compose_line_edit_is_removed = False
 
         control_layout.addWidget(self.load_button)
         control_layout.addWidget(self.compose_button)
@@ -87,24 +107,6 @@ class SamplingTheoryStudio(QMainWindow):
         main_layout.addLayout(control_layout)
 
         main_widget.setLayout(main_layout)
-
-        self.load_button.clicked.connect(self.load_signal)
-        self.cos_sin_expression.textChanged.connect(self.compose_signal)
-        self.noise_input.textChanged.connect(self.update_noise_level)
-        self.sampling_slider.valueChanged.connect(self.update_sampling_frequency)
-        self.reconstruction_combo.currentIndexChanged.connect(self.change_reconstruction_method)
-
-        self.signal= self.signal_loader.get_loaded_signal()
-        self.max_frequency = self.signal_loader.get_maximum_frequency()
-        self.sampling_frequency = 2 * self.max_frequency
-        self.method = self.reconstruction_combo.currentText()
-        self.sampled_points = self.signal_processor.sample_signal(self.signal, self.sampling_frequency)
-        self.recovered_signal = self.signal_processor.recover_signal(self.sampled_points, self.sampling_frequency, method = self.method)
-        self.difference_signal = self.signal_processor.calculate_difference(self.signal, self.recovered_signal)
-        self.frequency_domain = self.signal_processor.frequency_domain(self.recovered_signal, self.sampling_frequency)
-        self.update_plot()
-
-        self.compose_line_edit_is_removed = False
 
     def update_plot(self):
         self.signal = self.signal_loader.get_loaded_signal()
@@ -170,8 +172,8 @@ class SamplingTheoryStudio(QMainWindow):
         self.sampling_frequency = int(value * self.max_frequency)
         self.sampled_points = self.signal_processor.sample_signal(self.signal, self.sampling_frequency)
         self.update_plot()
-        self.max_frequency_label.setText(f"{value} f_max")
-        self.sampling_frequency_label.setText(f"f_sampling={self.sampling_frequency}Hz")
+        self.max_frequency_label.setText(f"{value} F_max")
+        self.sampling_frequency_label.setText(f"F_sampling={self.sampling_frequency}Hz")
 
     def update_noise_level(self, value):
         if value != "":
@@ -192,11 +194,4 @@ class SamplingTheoryStudio(QMainWindow):
         self.method = self.reconstruction_combo.currentText()
         self.recovered_signal = self.signal_processor.recover_signal(self.sampled_points, self.sampling_frequency, self.method)
         self.update_plot()
-
-
-# if __name__ == "__main__":
-#     app = QApplication(sys.argv)
-#     window = SamplingTheoryStudio()
-#     apply_stylesheet(app, theme='dark_teal.xml')
-#     window.show()
-#     sys.exit(app.exec_())
+        
