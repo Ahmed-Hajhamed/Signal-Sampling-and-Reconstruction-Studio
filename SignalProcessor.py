@@ -44,7 +44,7 @@ class  SignalProcessor:
             recovered_signal = Reconstruction.spline(sampled_points)
     
         else:
-         raise ValueError("Invalid method. Choose 'whittakerShannon', compressedSensing or levelCrossing")
+         raise ValueError("Invalid method. Choose 'whittakerShannon', Fourier or Spline")
         
         return recovered_signal
          

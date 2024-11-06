@@ -52,7 +52,7 @@ class SignalLoader:
     def get_maximum_frequency(self):
         time = self.signal_data[0]
         self.maximum_freq = 1 / (2 * (time[1] - time[0]))
-
+        print(self.maximum_freq)
         return self.maximum_freq
 
     def add_noise(self, snr):
@@ -68,3 +68,4 @@ class SignalLoader:
 
     def get_loaded_signal(self):
         return self.signal_data
+    

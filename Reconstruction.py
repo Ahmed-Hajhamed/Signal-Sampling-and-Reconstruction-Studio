@@ -2,7 +2,6 @@ import numpy as np
 from scipy.fft import dct
 import numpy as np
 from scipy.fft import fft, ifft, fftfreq
-import pyqtgraph as pg
 from scipy.interpolate import CubicSpline
 
 class Reconstruction:

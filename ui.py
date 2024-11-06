@@ -8,8 +8,6 @@ from PyQt5.QtGui import QIntValidator
 from SignalLoader import SignalLoader
 import SignalMixer
 from SignalProcessor import SignalProcessor
-import numpy as np
-import itertools
 class SamplingTheoryStudio(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -110,29 +108,6 @@ class SamplingTheoryStudio(QMainWindow):
 
         main_widget.setLayout(main_layout)
 
-                # Define a list of colors to cycle through
-        colors = ['r', 'g', 'b', 'm', 'c', 'y']  # Add more colors if needed
-        color_cycle = itertools.cycle(colors)  # Create a cyclic iterator for colors
-        print("here")
-        frequency_data = self.frequency_domain[0]
-        magnitude_data = self.frequency_domain[1]
-        start_idx = 0
-        current_frequency = 0.0
-
-        while current_frequency < frequency_data[-1]:
-            # Find the indices for the current frequency interval
-            end_idx = np.searchsorted(frequency_data, current_frequency + self.max_frequency)
-            
-            # Get current color from the cycle
-            color = next(color_cycle)
-            
-            # Plot the segment with the chosen color
-            self.frequency_domain_plot.plot(frequency_data[start_idx:end_idx], magnitude_data[start_idx:end_idx], pen=color)
-            
-            # Update indices and frequency for the next segment
-            start_idx = end_idx
-            current_frequency += self.max_frequency
-
 
     def update_plot(self):
         self.signal = self.signal_loader.get_loaded_signal()
@@ -162,6 +137,7 @@ class SamplingTheoryStudio(QMainWindow):
             self.difference_signal_plot.plot(self.difference_signal[0], self.difference_signal[1])
         if self.frequency_domain.size > 0:
             self.frequency_domain_plot.plot( self.frequency_domain[0], self.frequency_domain[1])
+        print(self.sampling_frequency)
 
 
     def load_signal(self):

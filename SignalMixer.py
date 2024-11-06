@@ -13,8 +13,8 @@ def add_components(expression: str):
     # Finding all matches
     matches = re.findall(pattern, expression)
     for match in matches:
-        sign = match[0] if match[0] else "+"  # Default sign is "+" if not specified
-        amplitude = int(match[1]) if match[1] else 1  # Default amplitude is 1 if not specified
+        sign = match[0] if match[0] else "+"  
+        amplitude = int(match[1]) if match[1] else 1  
         func_type = match[2]
         frequency = int(match[3]) if match[3] else 1
 
