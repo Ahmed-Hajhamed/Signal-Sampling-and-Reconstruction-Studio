@@ -7,7 +7,7 @@ class  SignalProcessor:
     def __init__(self):
         super().__init__()
 
-    def sample_signal(self, signal, sampling_frequency, method="uniform", threshold=None):
+    def sample_signal(self, signal, sampling_frequency):
         # This function uses different methods to take samples (uniform, non-uniform, or threshold sampling)
         """
         Creates samples from a signal based on the method chosen; uniform, non-uniform or threshold sampling.
@@ -15,37 +15,18 @@ class  SignalProcessor:
         time_data = signal[0]
         amplitude_data = signal[1]
 
-        if method == "uniform":
-            if sampling_frequency is None:
-                raise ValueError("Sampling frequency must be specified.")
-            
-            sampling_interval = (1 / sampling_frequency)  # samples per interval
-            sampled_points_time = np.arange(0, 2, sampling_interval)
-
-            # Calculate the sampled indices using np.searchsorted
-            sampled_indices = np.searchsorted(time_data, sampled_points_time)
-            
-            # To ensure we don't go out of bounds, you might want to filter sampled_indices
-            # Keep only valid indices
-            sampled_indices = sampled_indices[sampled_indices < len(time_data)]
-
-        # Now you can use sampled_indices to get sampled points from amplitude_data
-            # sampled_points = amplitude_data[sampled_indices]
-            
-        elif method == "non-uniform":
-            # Non-uniform sampling example (here, random selection)
-            random_generator = np.random.default_rng(0)  # Set seed for reproducibility
-            sampled_indices = np.sort(random_generator.choice(len(time_data), int(len(time_data) * 0.5), replace=False))
+        if sampling_frequency is None:
+            raise ValueError("Sampling frequency must be specified.")
         
-        elif method == "threshold":
-            if threshold is None:
-                raise ValueError("For threshold-based sampling, 'threshold' must be specified.")
-            
-            # Sample based on signal crossing the threshold level
-            sampled_indices = np.nonzero(np.abs(np.diff(np.sign(amplitude_data - threshold))) == 2)[0] #checks if there's a value is crossing the threshold
+        sampling_interval = (1 / sampling_frequency)  # samples per interval
+        sampled_points_time = np.arange(0, 2, sampling_interval)
+
+        # Calculate the sampled indices using np.searchsorted
+        sampled_indices = np.searchsorted(time_data, sampled_points_time)
         
-        else:
-            raise ValueError("Invalid method. Choose 'uniform', 'non-uniform', or 'threshold'.")
+        # To ensure we don't go out of bounds, you might want to filter sampled_indices
+        # Keep only valid indices
+        sampled_indices = sampled_indices[sampled_indices < len(time_data)]
 
         # Collect the sampled points
         sampled_points = amplitude_data[sampled_indices]
@@ -54,7 +35,7 @@ class  SignalProcessor:
 
         return sampled_signal
 
-    def recover_signal(self, sampled_points, sampling_frequency, sampled_indices = [], method = "Whittaker Shannon", threshold = None):
+    def recover_signal(self, sampled_points, sampling_frequency, method = "Whittaker Shannon"):
         """
         Reconstructs original signal from sampled points based on 3 methods; Niquist-Shannon,...
         """
@@ -64,13 +45,11 @@ class  SignalProcessor:
         if method == 'Whittaker Shannon' :
             recovered_signal = Reconstruction.whittaker_shannon(sampled_points, sampling_frequency)
 
-        elif method == 'Compressed Sensing' :
-            sampling_matrix = dct(np.eye(len(uniform_time_points)), axis=0, norm='ortho')
+        elif method == 'Fourier' :
             recovered_signal = Reconstruction.fourier(sampled_points , sampling_frequency)
-            # recovered_signal = Reconstruction.compressed_sensing_reconstruct(sampled_points, sampling_matrix, sampled_indices, duration)
 
-        elif method == 'Level Crossing':
-            recovered_signal = Reconstruction.level_crossing_reconstruct(sampled_points, duration, threshold)
+        elif method == 'Spline':
+            recovered_signal = Reconstruction.spline(sampled_points)
     
         else:
          raise ValueError("Invalid method. Choose 'whittakerShannon', compressedSensing or levelCrossing")

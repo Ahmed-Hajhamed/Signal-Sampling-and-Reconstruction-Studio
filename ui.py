@@ -1,13 +1,10 @@
-import sys
-import numpy as np
 from PyQt5.QtWidgets import (
-    QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QGridLayout,
+    QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QGridLayout,
     QPushButton, QComboBox, QSlider, QLabel, QMessageBox, QLineEdit, QFileDialog
 )
 from PyQt5.QtCore import Qt
 import pyqtgraph as pg
 from PyQt5.QtGui import QIntValidator
-from qt_material import apply_stylesheet
 from SignalLoader import SignalLoader
 import SignalMixer
 from SignalProcessor import SignalProcessor
@@ -62,7 +59,7 @@ class SamplingTheoryStudio(QMainWindow):
         self.reconstruction_label = QLabel("Reconstruction Method:")
         self.reconstruction_combo = QComboBox()
         self.reconstruction_combo.addItems(
-            ["Whittaker Shannon", "Compressed Sensing", "Level Crossing"])
+            ["Whittaker Shannon", "Fourier", "Spline"])
         self.reconstruction_combo.setStyleSheet("QComboBox { color: white; }")
 
         self.noise_label = QLabel("Noise Level (SNR):")
@@ -104,7 +101,6 @@ class SamplingTheoryStudio(QMainWindow):
         self.compose_line_edit_is_removed = False
 
     def update_plot(self):
-    # Retrieve signals and calculate necessary components
         self.signal = self.signal_loader.get_loaded_signal()
         if self.sampling_frequency == 0:
             print("Error: Sampling frequency is zero. Cannot proceed with plotting.")
@@ -112,32 +108,31 @@ class SamplingTheoryStudio(QMainWindow):
 
         self.method = self.reconstruction_combo.currentText()
         self.sampled_points = self.signal_processor.sample_signal(self.signal, self.sampling_frequency)
-        self.recovered_signal = self.signal_processor.recover_signal(self.sampled_points, self.sampling_frequency, [], method=self.method)
+        self.recovered_signal = self.signal_processor.recover_signal(self.sampled_points, self.sampling_frequency, method=self.method)
         self.difference_signal = self.signal_processor.calculate_difference(self.signal, self.recovered_signal)
         self.frequency_domain = self.signal_processor.frequency_domain(self.recovered_signal, self.sampling_frequency)
 
-        # Clear existing plots and set data as before
+        # Clear existing plots
         self.original_signal_plot.clear()
         self.reconstructed_signal_plot.clear()
         self.difference_signal_plot.clear()
         self.frequency_domain_plot.clear()
 
         if self.signal.size > 0:
-            self.curve_original_signal_plot.setData(self.signal[0], self.signal[1])
-            self.curve_original_signal_plot.setData(self.sampled_points[0], self.sampled_points[1])
+            # self.curve_original_signal_plot.setData(self.signal[0], self.signal[1])
+            # self.curve_original_signal_plot.setData(self.sampled_points[0], self.sampled_points[1])
             self.original_signal_plot.plot(self.signal[0], self.signal[1], color ='blue')
             self.original_signal_plot.plot(self.sampled_points[0], self.sampled_points[1], pen=None, symbol='o', symbolSize=5,symbolBrush='b', alpha=0.7)
         if self.recovered_signal.size > 0:
-            self.curve_reconstructed_signal_plot.setData(self.recovered_signal[0], self.recovered_signal[1])
+            # self.curve_reconstructed_signal_plot.setData(self.recovered_signal[0], self.recovered_signal[1])
             self.reconstructed_signal_plot.plot(self.recovered_signal[0], self.recovered_signal[1])
         if self.difference_signal.size > 0:
-            self.curve_difference_signal_plot.setData(self.difference_signal[0], self.difference_signal[1])
+            # self.curve_difference_signal_plot.setData(self.difference_signal[0], self.difference_signal[1])
             self.difference_signal_plot.plot(self.difference_signal[0], self.difference_signal[1])
         if self.frequency_domain.size > 0:
-            self.curve_frequency_domain_plot.setData(self.frequency_domain[0], self.frequency_domain[1])
+            # self.curve_frequency_domain_plot.setData(self.frequency_domain[0], self.frequency_domain[1])
             self.frequency_domain_plot.plot( self.frequency_domain[0], self.frequency_domain[1])
 
-        # self.update_sampling_frequency(self.sampling_slider.value())
 
     def load_signal(self):
         file_path, _ = QFileDialog.getOpenFileName(None, "Open CSV File", "", "CSV Files (*.csv)")
@@ -187,14 +182,13 @@ class SamplingTheoryStudio(QMainWindow):
 
     def change_reconstruction_method(self, index):
         self.method = self.reconstruction_combo.currentText()
-        self.recovered_signal = self.signal_processor.recover_signal(self.sampled_points, self.sampling_frequency, [], self.method)
-        print(f"Reconstruction method changed to {index}")
+        self.recovered_signal = self.signal_processor.recover_signal(self.sampled_points, self.sampling_frequency, self.method)
         self.update_plot()
 
 
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    window = SamplingTheoryStudio()
-    apply_stylesheet(app, theme='dark_teal.xml')
-    window.show()
-    sys.exit(app.exec_())
+# if __name__ == "__main__":
+#     app = QApplication(sys.argv)
+#     window = SamplingTheoryStudio()
+#     apply_stylesheet(app, theme='dark_teal.xml')
+#     window.show()
+#     sys.exit(app.exec_())

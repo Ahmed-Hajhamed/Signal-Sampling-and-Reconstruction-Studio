@@ -1,14 +1,13 @@
-import SignalMixer
-from SignalProcessor import SignalProcessor
-import SignalLoader
-from UIManager import UIManager
+from ui import SamplingTheoryStudio
+import sys
+from PyQt5.QtWidgets import QApplication
+from qt_material import apply_stylesheet
 class Application:
     def __init__(self):
-        self.signal_loader = SignalLoader()
-        self.signal_mixer = SignalMixer()
-        self.signal_processor = SignalProcessor()
-        self.ui_manager = UIManager()
-
-    def run(self):
-        self.ui_manager.setup_main_window()
-        # Event loop to handle real-time updates
+        super().__init__()
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    window = SamplingTheoryStudio()
+    apply_stylesheet(app, theme='dark_teal.xml')
+    window.show()
+    sys.exit(app.exec_())
