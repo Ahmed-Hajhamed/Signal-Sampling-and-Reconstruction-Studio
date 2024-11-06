@@ -9,4 +9,3 @@ if __name__ == "__main__":
     apply_stylesheet(app, theme='dark_teal.xml')
     window.show()
     sys.exit(app.exec_())
-    

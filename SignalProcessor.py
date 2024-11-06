@@ -15,40 +15,46 @@ class  SignalProcessor:
 
         if sampling_frequency is None:
             raise ValueError("Sampling frequency must be specified.")
-        
-        sampling_interval = (1 / sampling_frequency)  # samples per interval
-        sampled_points_time = np.arange(0, 2, sampling_interval)
+        if sampling_frequency != 0:
+            sampling_interval = (1 / sampling_frequency)  # samples per interval
+            sampled_points_time = np.arange(0, 2, sampling_interval)
 
-        sampled_indices = np.searchsorted(time_data, sampled_points_time)
-        
-        sampled_indices = sampled_indices[sampled_indices < len(time_data)]
+            # Calculate the sampled indices using np.searchsorted
+            sampled_indices = np.searchsorted(time_data, sampled_points_time)
 
-        sampled_points = amplitude_data[sampled_indices]
-        sampled_points_time = time_data[sampled_indices]
-        sampled_signal = np.array([sampled_points_time, sampled_points])
+            # To ensure we don't go out of bounds, you might want to filter sampled_indices
+            # Keep only valid indices
+            sampled_indices = sampled_indices[sampled_indices < len(time_data)]
+
+            # Collect the sampled points
+            sampled_points = amplitude_data[sampled_indices]
+            sampled_points_time = time_data[sampled_indices]
+            sampled_signal = np.array([sampled_points_time, sampled_points])
+        else:
+            sampled_signal = np.array([[], []])
 
         return sampled_signal
 
-    def recover_signal(self, sampled_points, sampling_frequency, method = "Whittaker Shannon"):
+    def recover_signal(self, sampled_points, sampling_frequency, method="Whittaker Shannon"):
         """
         Reconstructs original signal from sampled points based on 3 methods; Niquist-Shannon,...
         """
         recovered_signal = None
-        if method == 'Whittaker Shannon' :
+        duration = 2
+        uniform_time_points = np.arange(0, duration, 1 / sampling_frequency)
+        if method == 'Whittaker Shannon':
             recovered_signal = Reconstruction.whittaker_shannon(sampled_points, sampling_frequency)
 
-        elif method == 'Fourier' :
+        elif method == 'Fourier':
             recovered_signal = Reconstruction.fourier(sampled_points , sampling_frequency)
 
         elif method == 'Spline':
             recovered_signal = Reconstruction.spline(sampled_points)
     
         else:
-         raise ValueError("Invalid method. Choose 'whittakerShannon', Fourier or Spline")
+            raise ValueError("Invalid method. Choose 'whittakerShannon', compressedSensing or levelCrossing")
         
         return recovered_signal
-         
-    
 
     def calculate_difference(self,signal,  recovered_signal):
         """
@@ -73,7 +79,9 @@ class  SignalProcessor:
         
         return signals_difference
 
-    def frequency_domain(self, recovered_signal, sampling_frequency):
+    @staticmethod
+    def frequency_domain(recovered_signal, sampling_frequency):
+        # Perform Fourier transform to check for aliasing
         """
         Returns the full frequency domain of recovered signal.
         """
@@ -95,7 +103,9 @@ class  SignalProcessor:
         
         return frequency_domain
 
-    def align_signals(self, original_time, original_values, recovered_time, recovered_values):
+    @staticmethod
+    def align_signals(self, original_time, recovered_time, recovered_values):
+        # Create an interpolation function based on the recovered signal
         interp_function = interp1d(recovered_time, recovered_values, bounds_error=False, fill_value="extrapolate")
         aligned_recovered_values = interp_function(original_time)
         return aligned_recovered_values
