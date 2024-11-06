@@ -32,9 +32,8 @@ class Reconstruction:
         return reconstructed_signal
     
     @staticmethod
-    def fourier(sampled_points, sampling_frequency):
-
-        # Original signal
+    def fourier(sampled_points, maximum_frequency):
+        
         signal = sampled_points[1]
         time = np.linspace(0, 2, len(signal))
 
@@ -42,7 +41,7 @@ class Reconstruction:
         signal_fft = fft(signal)
 
         freq = fftfreq(N, d=(time[1] - time[0]))
-        cutoff_freq = sampling_frequency/2 
+        cutoff_freq = maximum_frequency/2 
         signal_fft[np.abs(freq) > cutoff_freq] = 0
         reconstructed_signal = np.real(ifft(signal_fft))
 

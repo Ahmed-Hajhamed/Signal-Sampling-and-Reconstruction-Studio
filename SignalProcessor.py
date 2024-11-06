@@ -1,4 +1,3 @@
-import sys
 import numpy as np
 from Reconstruction import Reconstruction
 from scipy.fft import dct
@@ -8,7 +7,6 @@ class  SignalProcessor:
         super().__init__()
 
     def sample_signal(self, signal, sampling_frequency):
-        # This function uses different methods to take samples (uniform, non-uniform, or threshold sampling)
         """
         Creates samples from a signal based on the method chosen; uniform, non-uniform or threshold sampling.
         """
@@ -21,14 +19,10 @@ class  SignalProcessor:
         sampling_interval = (1 / sampling_frequency)  # samples per interval
         sampled_points_time = np.arange(0, 2, sampling_interval)
 
-        # Calculate the sampled indices using np.searchsorted
         sampled_indices = np.searchsorted(time_data, sampled_points_time)
         
-        # To ensure we don't go out of bounds, you might want to filter sampled_indices
-        # Keep only valid indices
         sampled_indices = sampled_indices[sampled_indices < len(time_data)]
 
-        # Collect the sampled points
         sampled_points = amplitude_data[sampled_indices]
         sampled_points_time = time_data[sampled_indices]
         sampled_signal = np.array([sampled_points_time, sampled_points])
@@ -40,8 +34,6 @@ class  SignalProcessor:
         Reconstructs original signal from sampled points based on 3 methods; Niquist-Shannon,...
         """
         recovered_signal = None
-        duration = 2
-        uniform_time_points = np.arange(0, duration, 1 / sampling_frequency)
         if method == 'Whittaker Shannon' :
             recovered_signal = Reconstruction.whittaker_shannon(sampled_points, sampling_frequency)
 
@@ -59,8 +51,6 @@ class  SignalProcessor:
     
 
     def calculate_difference(self,signal,  recovered_signal):
-        # Calculate the difference between original and recovered signals
-        # Outputs signals_difference in a 2D numpy array
         """
         Calculates the error in the recovered signal (difference between original and recovered signal).
         #         """
@@ -84,14 +74,12 @@ class  SignalProcessor:
         return signals_difference
 
     def frequency_domain(self, recovered_signal, sampling_frequency):
-        # Perform Fourier transform to check for aliasing
         """
         Returns the full frequency domain of recovered signal.
         """
-        # Extract time and signal values
         signal = recovered_signal[1]
      
-        time_intervals = 1 / sampling_frequency  #time interval between samples
+        time_intervals = 1 / sampling_frequency 
         
         # Number of samples
         number_of_samples = len(signal)
@@ -99,17 +87,15 @@ class  SignalProcessor:
         # Perform FFT to get frequency components
         freq_spectrum = np.fft.fft(signal)
         
-        # Generate the full range of frequency bins
+        # Generate the full range of frequency
         frequency_components = np.fft.fftfreq(number_of_samples, d=time_intervals)
-        magnitude_components = np.abs(freq_spectrum) * 2 / number_of_samples  #Scaled Magnitude
+        magnitude_components = np.abs(freq_spectrum) * 2 / number_of_samples 
 
         frequency_domain = np.array([frequency_components, magnitude_components])
         
         return frequency_domain
 
     def align_signals(self, original_time, original_values, recovered_time, recovered_values):
-        # Create an interpolation function based on the recovered signal
         interp_function = interp1d(recovered_time, recovered_values, bounds_error=False, fill_value="extrapolate")
-        # Use it to generate recovered values at the original time points
         aligned_recovered_values = interp_function(original_time)
         return aligned_recovered_values

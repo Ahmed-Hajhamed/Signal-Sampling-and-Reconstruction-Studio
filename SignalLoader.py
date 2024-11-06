@@ -9,7 +9,7 @@ class SignalLoader:
         time_data = self.signal_data.iloc[:, 0].values
         amplitude_data = self.signal_data.iloc[:, 1].values
         self.signal_data = np.array([time_data, amplitude_data])
-        # Crop the signal to only the first second
+        # Crop the signal
         first_second_indices = np.where(time_data <= 2)[0]  # Get indices where time is less than or equal to 1 second
 
         if first_second_indices.size > 0:  # Check if there are any indices found

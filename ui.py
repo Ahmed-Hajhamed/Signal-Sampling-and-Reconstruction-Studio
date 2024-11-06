@@ -8,8 +8,8 @@ from PyQt5.QtGui import QIntValidator
 from SignalLoader import SignalLoader
 import SignalMixer
 from SignalProcessor import SignalProcessor
-
-
+import numpy as np
+import itertools
 class SamplingTheoryStudio(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -61,14 +61,8 @@ class SamplingTheoryStudio(QMainWindow):
         self.reconstruction_combo = QComboBox()
         self.reconstruction_combo.addItems(
             ["Whittaker Shannon", "Fourier", "Spline"])
-        self.reconstruction_combo.setStyleSheet("""
-                                                    QComboBox {
-                                                        color: 'white'; 
-                                                    }
-                                                    QComboBox QAbstractItemView {
-                                                        color: 'white';
-                                                    }
-                                                """)
+        self.reconstruction_combo.setStyleSheet(""" QComboBox { color: 'white';}
+                                                    QComboBox QAbstractItemView {color: 'white'; }""")
 
         self.noise_label = QLabel("Noise Level (SNR):")
         self.noise_input = QLineEdit()
@@ -85,13 +79,14 @@ class SamplingTheoryStudio(QMainWindow):
         self.max_frequency = self.signal_loader.get_maximum_frequency()
         self.sampling_frequency = 2 * self.max_frequency
         self.method = self.reconstruction_combo.currentText()
+
         self.sampled_points = self.signal_processor.sample_signal(self.signal, self.sampling_frequency)
         self.recovered_signal = self.signal_processor.recover_signal(self.sampled_points, self.sampling_frequency, method = self.method)
         self.difference_signal = self.signal_processor.calculate_difference(self.signal, self.recovered_signal)
         self.frequency_domain = self.signal_processor.frequency_domain(self.recovered_signal, self.sampling_frequency)
 
-        self.sampling_frequency_label= QLabel(f"F_sampling={self.sampling_frequency}Hz")
-        self.max_frequency_label = QLabel(f"{2} F_max")
+        # self.sampling_frequency_label= QLabel(f"F_sampling={self.sampling_frequency}Hz")
+        # self.max_frequency_label = QLabel(f"{2} F_max")
 
         self.update_plot()
 
@@ -102,9 +97,9 @@ class SamplingTheoryStudio(QMainWindow):
         control_layout.addWidget(self.cos_sin_expression)
         control_layout.addWidget(self.sampling_label)
         control_layout.addWidget(self.sampling_slider)
-        v_layout_for_label_of_frequencies.addWidget(self.max_frequency_label)
-        v_layout_for_label_of_frequencies.addWidget(self.sampling_frequency_label)
-        control_layout.addLayout(v_layout_for_label_of_frequencies)
+        # v_layout_for_label_of_frequencies.addWidget(self.max_frequency_label)
+        # v_layout_for_label_of_frequencies.addWidget(self.sampling_frequency_label)
+        # control_layout.addLayout(v_layout_for_label_of_frequencies)
         control_layout.addWidget(self.reconstruction_label)
         control_layout.addWidget(self.reconstruction_combo)
         control_layout.addWidget(self.noise_label)
@@ -115,8 +110,33 @@ class SamplingTheoryStudio(QMainWindow):
 
         main_widget.setLayout(main_layout)
 
+                # Define a list of colors to cycle through
+        colors = ['r', 'g', 'b', 'm', 'c', 'y']  # Add more colors if needed
+        color_cycle = itertools.cycle(colors)  # Create a cyclic iterator for colors
+        print("here")
+        frequency_data = self.frequency_domain[0]
+        magnitude_data = self.frequency_domain[1]
+        start_idx = 0
+        current_frequency = 0.0
+
+        while current_frequency < frequency_data[-1]:
+            # Find the indices for the current frequency interval
+            end_idx = np.searchsorted(frequency_data, current_frequency + self.max_frequency)
+            
+            # Get current color from the cycle
+            color = next(color_cycle)
+            
+            # Plot the segment with the chosen color
+            self.frequency_domain_plot.plot(frequency_data[start_idx:end_idx], magnitude_data[start_idx:end_idx], pen=color)
+            
+            # Update indices and frequency for the next segment
+            start_idx = end_idx
+            current_frequency += self.max_frequency
+
+
     def update_plot(self):
         self.signal = self.signal_loader.get_loaded_signal()
+        self.max_frequency = self.signal_loader.get_maximum_frequency()
         if self.sampling_frequency == 0:
             print("Error: Sampling frequency is zero. Cannot proceed with plotting.")
             return
@@ -134,18 +154,13 @@ class SamplingTheoryStudio(QMainWindow):
         self.frequency_domain_plot.clear()
 
         if self.signal.size > 0:
-            # self.curve_original_signal_plot.setData(self.signal[0], self.signal[1])
-            # self.curve_original_signal_plot.setData(self.sampled_points[0], self.sampled_points[1])
             self.original_signal_plot.plot(self.signal[0], self.signal[1], color ='blue')
             self.original_signal_plot.plot(self.sampled_points[0], self.sampled_points[1], pen=None, symbol='o', symbolSize=5,symbolBrush='b', alpha=0.7)
         if self.recovered_signal.size > 0:
-            # self.curve_reconstructed_signal_plot.setData(self.recovered_signal[0], self.recovered_signal[1])
             self.reconstructed_signal_plot.plot(self.recovered_signal[0], self.recovered_signal[1])
         if self.difference_signal.size > 0:
-            # self.curve_difference_signal_plot.setData(self.difference_signal[0], self.difference_signal[1])
             self.difference_signal_plot.plot(self.difference_signal[0], self.difference_signal[1])
         if self.frequency_domain.size > 0:
-            # self.curve_frequency_domain_plot.setData(self.frequency_domain[0], self.frequency_domain[1])
             self.frequency_domain_plot.plot( self.frequency_domain[0], self.frequency_domain[1])
 
 
@@ -179,8 +194,8 @@ class SamplingTheoryStudio(QMainWindow):
         self.sampling_frequency = int(value * self.max_frequency)
         self.sampled_points = self.signal_processor.sample_signal(self.signal, self.sampling_frequency)
         self.update_plot()
-        self.max_frequency_label.setText(f"{value} F_max")
-        self.sampling_frequency_label.setText(f"F_sampling={self.sampling_frequency}Hz")
+        # self.max_frequency_label.setText(f"{value} F_max")
+        # self.sampling_frequency_label.setText(f"F_sampling={self.sampling_frequency}Hz")
 
     def update_noise_level(self, value):
         if value != "":
