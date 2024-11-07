@@ -1,6 +1,5 @@
 import numpy as np
 from Reconstruction import Reconstruction
-from scipy.fft import dct
 from scipy.interpolate import interp1d
 class  SignalProcessor:
     def __init__(self):
@@ -18,12 +17,9 @@ class  SignalProcessor:
         if sampling_frequency != 0:
             sampling_interval = (1 / sampling_frequency)  # samples per interval
             sampled_points_time = np.arange(0, 2, sampling_interval)
-
-            # Calculate the sampled indices using np.searchsorted
+            
             sampled_indices = np.searchsorted(time_data, sampled_points_time)
 
-            # To ensure we don't go out of bounds, you might want to filter sampled_indices
-            # Keep only valid indices
             sampled_indices = sampled_indices[sampled_indices < len(time_data)]
 
             # Collect the sampled points
@@ -35,7 +31,7 @@ class  SignalProcessor:
 
         return sampled_signal
 
-    def recover_signal(self, sampled_points, sampling_frequency, method="Whittaker Shannon"):
+    def recover_signal(self, original_time_points, sampled_points, sampling_frequency, method="Whittaker Shannon"):
         """
         Reconstructs original signal from sampled points based on 3 methods; Niquist-Shannon,...
         """
@@ -43,7 +39,7 @@ class  SignalProcessor:
         duration = 2
         uniform_time_points = np.arange(0, duration, 1 / sampling_frequency)
         if method == 'Whittaker Shannon':
-            recovered_signal = Reconstruction.whittaker_shannon(sampled_points, sampling_frequency)
+            recovered_signal = Reconstruction.whittaker_shannon(original_time_points, sampled_points, sampling_frequency)
 
         elif method == 'Fourier':
             recovered_signal = Reconstruction.fourier(sampled_points , sampling_frequency)

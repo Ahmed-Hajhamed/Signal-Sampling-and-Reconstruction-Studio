@@ -6,16 +6,14 @@ from scipy.interpolate import CubicSpline
 
 class Reconstruction:
     @staticmethod
-    def whittaker_shannon(sampled_points, sampling_frequency):
+    def whittaker_shannon(original_time_points, sampled_points, sampling_frequency):
         """
         Perform Whittaker-Shannon reconstruction of a signal from uniformly taken samples.
         """
         # Calculate sampling interval T
         sampling_interval = (1 / sampling_frequency)
 
-        duration = 2
-
-        time_points = np.arange(0, duration, sampling_interval)
+        time_points = original_time_points
 
         sampled_times = sampled_points[0]
         sampled_amplitudes = sampled_points[1]
@@ -33,11 +31,12 @@ class Reconstruction:
     @staticmethod
     def fourier(sampled_points, maximum_frequency):
         
-        signal = sampled_points[1]
-        time = np.linspace(0, 2, len(signal))
+        sampled_amplitudes = sampled_points[1]
+        # time = np.linspace(0, 2, len(sampled_amplitudes))
+        time = sampled_points[0]
 
-        N = len(signal)
-        signal_fft = fft(signal)
+        N = len(sampled_amplitudes)
+        signal_fft = fft(sampled_amplitudes)
 
         freq = fftfreq(N, d=(time[1] - time[0]))
         cutoff_freq = maximum_frequency/2 
@@ -47,21 +46,19 @@ class Reconstruction:
         # New time points for the reconstructed signal
         new_time = np.linspace(time[0], time[-1], len(reconstructed_signal))
         return np.array([new_time, reconstructed_signal])
-
+    
     @staticmethod
     def spline(sampled_points):
-
         signal = sampled_points[1]
         time = np.linspace(0, 2, len(signal))
-        N = len(signal)
-
-        signal_fft = fft(signal)
-
-        padded_fft = np.pad(signal_fft, (0, N), 'constant')
-        reconstructed_signal = np.real(ifft(padded_fft))
-
-        spline = CubicSpline(time, signal)
-        new_time = np.linspace(time[0], time[-1], len(reconstructed_signal))
+        
+        # Fit a 3rd-degree spline using CubicSpline
+        spline = CubicSpline(time, signal, bc_type='natural')
+        
+        # Generate new time points for a smooth curve
+        new_time = np.linspace(time[0], time[-1], 4 * len(time))  # Increase points for a smoother output
+        
+        # Evaluate the spline at the new time points
         reconstructed_signal = spline(new_time)
-        new_time = np.linspace(time[0], time[-1], len(reconstructed_signal))
+        
         return np.array([new_time, reconstructed_signal])
