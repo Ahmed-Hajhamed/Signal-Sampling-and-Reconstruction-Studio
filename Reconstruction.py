@@ -32,14 +32,13 @@ class Reconstruction:
     def fourier(sampled_points, maximum_frequency):
         
         sampled_amplitudes = sampled_points[1]
-        # time = np.linspace(0, 2, len(sampled_amplitudes))
         time = sampled_points[0]
 
         N = len(sampled_amplitudes)
         signal_fft = fft(sampled_amplitudes)
 
         freq = fftfreq(N, d=(time[1] - time[0]))
-        cutoff_freq = maximum_frequency/2 
+        cutoff_freq = maximum_frequency
         signal_fft[np.abs(freq) > cutoff_freq] = 0
         reconstructed_signal = np.real(ifft(signal_fft))
 
@@ -51,14 +50,9 @@ class Reconstruction:
     def spline(sampled_points):
         signal = sampled_points[1]
         time = np.linspace(0, 2, len(signal))
-        
-        # Fit a 3rd-degree spline using CubicSpline
+
         spline = CubicSpline(time, signal, bc_type='natural')
-        
-        # Generate new time points for a smooth curve
-        new_time = np.linspace(time[0], time[-1], 4 * len(time))  # Increase points for a smoother output
-        
-        # Evaluate the spline at the new time points
+        new_time = np.linspace(time[0], time[-1], 4 * len(time))  
         reconstructed_signal = spline(new_time)
         
         return np.array([new_time, reconstructed_signal])

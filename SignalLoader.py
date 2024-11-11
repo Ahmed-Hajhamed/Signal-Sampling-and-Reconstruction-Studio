@@ -29,10 +29,10 @@ class SignalLoader:
             self.signal_data = np.array([time_data, amplitude_data])
 
             # Crop the signal to only the first second
-            first_second_indices = np.where(time_data <= 2)[0]  # Get indices where time is less than or equal to 1 second
+            first_second_indices = np.where(time_data <= 2)[0]  # crop the first 2 seconds
 
-            if first_second_indices.size > 0:  # Check if there are any indices found
-                self.signal_data = self.signal_data[:, first_second_indices]  # Crop the signal data
+            if first_second_indices.size > 0: 
+                self.signal_data = self.signal_data[:, first_second_indices]  
             else:
                 print("Warning: No data points found for the first second of the signal.")
 

@@ -31,7 +31,7 @@ class  SignalProcessor:
 
         return sampled_signal
 
-    def recover_signal(self, original_time_points, sampled_points, sampling_frequency, method="Whittaker Shannon"):
+    def recover_signal(self, original_time_points, sampled_points, sampling_frequency,maximum_frequency, method="Whittaker Shannon"):
         """
         Reconstructs original signal from sampled points based on 3 methods; Niquist-Shannon,...
         """
@@ -42,7 +42,7 @@ class  SignalProcessor:
             recovered_signal = Reconstruction.whittaker_shannon(original_time_points, sampled_points, sampling_frequency)
 
         elif method == 'Fourier':
-            recovered_signal = Reconstruction.fourier(sampled_points , sampling_frequency)
+            recovered_signal = Reconstruction.fourier(sampled_points , maximum_frequency)
 
         elif method == 'Spline':
             recovered_signal = Reconstruction.spline(sampled_points)
@@ -94,6 +94,11 @@ class  SignalProcessor:
         # Generate the full range of frequency
         frequency_components = np.fft.fftfreq(number_of_samples, d=time_intervals)
         magnitude_components = np.abs(freq_spectrum) * 2 / number_of_samples 
+
+        # Sort by frequency (negative frequencies first, then positive)
+        sorted_indices = np.argsort(frequency_components)
+        frequency_components = frequency_components[sorted_indices]
+        magnitude_components = magnitude_components[sorted_indices]
 
         frequency_domain = np.array([frequency_components, magnitude_components])
         

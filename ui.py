@@ -8,6 +8,7 @@ from PyQt5.QtGui import QIntValidator
 from SignalLoader import SignalLoader
 import SignalMixer
 from SignalProcessor import SignalProcessor
+import numpy as np
 class SamplingTheoryStudio(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -81,7 +82,8 @@ class SamplingTheoryStudio(QMainWindow):
         self.method = self.reconstruction_combo.currentText()
 
         self.sampled_points = self.signal_processor.sample_signal(self.signal, self.sampling_frequency)
-        self.recovered_signal = self.signal_processor.recover_signal(self.signal[0], self.sampled_points, self.sampling_frequency, method = self.method)
+        self.recovered_signal = self.signal_processor.recover_signal(self.signal[0], self.sampled_points, 
+                                         self.sampling_frequency, self.max_frequency,method = self.method)
         self.difference_signal = self.signal_processor.calculate_difference(self.signal, self.recovered_signal)
         self.frequency_domain = self.signal_processor.frequency_domain(self.recovered_signal, self.sampling_frequency)
 
@@ -120,7 +122,8 @@ class SamplingTheoryStudio(QMainWindow):
 
         self.method = self.reconstruction_combo.currentText()
         self.sampled_points = self.signal_processor.sample_signal(self.signal, self.sampling_frequency)
-        self.recovered_signal = self.signal_processor.recover_signal(self.signal[0], self.sampled_points, self.sampling_frequency, method=self.method)
+        self.recovered_signal = self.signal_processor.recover_signal(self.signal[0], self.sampled_points,
+                                           self.sampling_frequency, self.max_frequency, method=self.method)
         self.difference_signal = self.signal_processor.calculate_difference(self.signal, self.recovered_signal)
         self.frequency_domain = self.signal_processor.frequency_domain(self.recovered_signal, self.sampling_frequency)
 
@@ -130,6 +133,8 @@ class SamplingTheoryStudio(QMainWindow):
         self.difference_signal_plot.clear()
         self.frequency_domain_plot.clear()
 
+        offsets = [-self.sampling_frequency, self.sampling_frequency]   
+        
         if self.signal.size > 0:
             self.original_signal_plot.plot(self.signal[0], self.signal[1], color ='blue')
             self.original_signal_plot.plot(self.sampled_points[0], self.sampled_points[1], pen=None, symbol='o', symbolSize=5,symbolBrush='b', alpha=0.7)
@@ -138,10 +143,20 @@ class SamplingTheoryStudio(QMainWindow):
         if self.difference_signal.size > 0:
             self.difference_signal_plot.plot(self.difference_signal[0], self.difference_signal[1])
         if self.frequency_domain.size > 0:
-            self.frequency_domain_plot.plot( self.frequency_domain[0], self.frequency_domain[1])
-        print(self.sampling_frequency)
+                frequency_components = self.frequency_domain[0]
+                magnitude_components = self.frequency_domain[1]
+                original_band_mask = (self.frequency_domain[0] >= -self.sampling_frequency) & (self.frequency_domain[0] <= self.sampling_frequency)
+                self.frequency_domain_plot.plot(frequency_components[original_band_mask], 
+                                magnitude_components[original_band_mask], 
+                            pen=pg.mkPen(color='white', width=2))
+                
+                for i, offset in enumerate(offsets):
+                         repeated_band_mask = (frequency_components + offset >= -self.max_frequency) & (frequency_components + offset <=self.max_frequency)
+                         self.frequency_domain_plot.plot(frequency_components[repeated_band_mask] + offset, 
+                                   magnitude_components[repeated_band_mask], 
+                                   pen=pg.mkPen(color='r'))
 
-
+                    
     def load_signal(self):
         file_path, _ = QFileDialog.getOpenFileName(None, "Open CSV File", "", "CSV Files (*.csv)")
         self.signal_loader.load_signal_from_file(file_path)
@@ -192,5 +207,6 @@ class SamplingTheoryStudio(QMainWindow):
 
     def change_reconstruction_method(self, index):
         self.method = self.reconstruction_combo.currentText()
-        self.recovered_signal = self.signal_processor.recover_signal(self.signal[0],self.sampled_points, self.sampling_frequency, self.method)
+        self.recovered_signal = self.signal_processor.recover_signal(self.signal[0],self.sampled_points, 
+                                                 self.sampling_frequency, self.max_frequency,self.method)
         self.update_plot()

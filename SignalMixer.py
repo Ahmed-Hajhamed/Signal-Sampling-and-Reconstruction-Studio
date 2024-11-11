@@ -7,7 +7,7 @@ time = np.array([])
 
 
 def add_components(expression: str):
-    expression.lower()
+    expression = expression.lower()
     pattern = r'([\+\-]?)\s*(\d*)\s*(cos|sin)\s*\(\s*(\d*)\s*t\s*\)'
 
     # Finding all matches
