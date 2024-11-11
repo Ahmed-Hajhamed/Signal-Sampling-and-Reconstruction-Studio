@@ -15,7 +15,7 @@ class  SignalProcessor:
         if sampling_frequency is None:
             raise ValueError("Sampling frequency must be specified.")
         if sampling_frequency != 0:
-            sampling_interval = (1 / sampling_frequency)  # samples per interval
+            sampling_interval = (1 / sampling_frequency)
             sampled_points_time = np.arange(0, 2, sampling_interval)
             
             sampled_indices = np.searchsorted(time_data, sampled_points_time)
@@ -31,7 +31,7 @@ class  SignalProcessor:
 
         return sampled_signal
 
-    def recover_signal(self, original_time_points, sampled_points, sampling_frequency,maximum_frequency, method="Whittaker Shannon"):
+    def recover_signal(self, original_time_points, sampled_points, sampling_frequency, method="Whittaker Shannon"):
         """
         Reconstructs original signal from sampled points based on 3 methods; Niquist-Shannon,...
         """
@@ -42,7 +42,7 @@ class  SignalProcessor:
             recovered_signal = Reconstruction.whittaker_shannon(original_time_points, sampled_points, sampling_frequency)
 
         elif method == 'Fourier':
-            recovered_signal = Reconstruction.fourier(sampled_points , maximum_frequency)
+            recovered_signal = Reconstruction.fourier(sampled_points , sampling_frequency)
 
         elif method == 'Spline':
             recovered_signal = Reconstruction.spline(sampled_points)
@@ -63,7 +63,8 @@ class  SignalProcessor:
         recovered_signal_time = recovered_signal[0]
         recovered_signal_values = recovered_signal[1]
         # Align recovered signal with original signal time
-        recovered_signal_values = self.align_signals(original_signal_time, original_signal_values, recovered_signal_time, recovered_signal_values)
+        recovered_signal_values = self.align_signals(original_signal_time, original_signal_values,
+                                                      recovered_signal_time, recovered_signal_values)
 
         recovered_signal_values = np.pad(recovered_signal_values,
                                          (0, len(original_signal_values) - len(recovered_signal_values)),

@@ -83,7 +83,7 @@ class SamplingTheoryStudio(QMainWindow):
 
         self.sampled_points = self.signal_processor.sample_signal(self.signal, self.sampling_frequency)
         self.recovered_signal = self.signal_processor.recover_signal(self.signal[0], self.sampled_points, 
-                                         self.sampling_frequency, self.max_frequency,method = self.method)
+                                         self.sampling_frequency, method = self.method)
         self.difference_signal = self.signal_processor.calculate_difference(self.signal, self.recovered_signal)
         self.frequency_domain = self.signal_processor.frequency_domain(self.recovered_signal, self.sampling_frequency)
 
@@ -123,7 +123,7 @@ class SamplingTheoryStudio(QMainWindow):
         self.method = self.reconstruction_combo.currentText()
         self.sampled_points = self.signal_processor.sample_signal(self.signal, self.sampling_frequency)
         self.recovered_signal = self.signal_processor.recover_signal(self.signal[0], self.sampled_points,
-                                           self.sampling_frequency, self.max_frequency, method=self.method)
+                                           self.sampling_frequency, method=self.method)
         self.difference_signal = self.signal_processor.calculate_difference(self.signal, self.recovered_signal)
         self.frequency_domain = self.signal_processor.frequency_domain(self.recovered_signal, self.sampling_frequency)
 
@@ -137,7 +137,8 @@ class SamplingTheoryStudio(QMainWindow):
         
         if self.signal.size > 0:
             self.original_signal_plot.plot(self.signal[0], self.signal[1], color ='blue')
-            self.original_signal_plot.plot(self.sampled_points[0], self.sampled_points[1], pen=None, symbol='o', symbolSize=5,symbolBrush='b', alpha=0.7)
+            self.original_signal_plot.plot(self.sampled_points[0], self.sampled_points[1],
+                                            pen=None, symbol='o', symbolSize=5,symbolBrush='b', alpha=0.7)
         if self.recovered_signal.size > 0:
             self.reconstructed_signal_plot.plot(self.recovered_signal[0], self.recovered_signal[1])
         if self.difference_signal.size > 0:
@@ -208,5 +209,5 @@ class SamplingTheoryStudio(QMainWindow):
     def change_reconstruction_method(self, index):
         self.method = self.reconstruction_combo.currentText()
         self.recovered_signal = self.signal_processor.recover_signal(self.signal[0],self.sampled_points, 
-                                                 self.sampling_frequency, self.max_frequency,self.method)
+                                                 self.sampling_frequency, self.method)
         self.update_plot()
