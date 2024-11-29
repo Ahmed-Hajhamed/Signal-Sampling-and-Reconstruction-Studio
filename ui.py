@@ -1,6 +1,6 @@
 from PyQt5.QtWidgets import (
     QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QGridLayout,
-    QPushButton, QComboBox, QSlider, QLabel, QLineEdit
+    QPushButton, QComboBox, QSlider, QLabel, QLineEdit, QFrame
 )
 from PyQt5.QtCore import Qt
 import pyqtgraph as pg
@@ -51,6 +51,7 @@ class UI(QMainWindow):
         self.sampling_slider.setMinimum(10)
         self.sampling_slider.setMaximum(400)
         self.sampling_slider.setValue(200)
+        self.sampling_slider.setMinimumWidth(100)
 
         self.reconstruction_label = QLabel("Reconstruction Method:")
         self.reconstruction_combo = QComboBox()
@@ -58,26 +59,49 @@ class UI(QMainWindow):
             ["Whittaker Shannon", "Fourier", "Spline"])
         self.reconstruction_combo.setStyleSheet(""" QComboBox { color: 'white';}
                                                     QComboBox QAbstractItemView {color: 'white'; }""")
+        
+        self.scenarios_label = QLabel("Test Scenarios:")
+        self.scenarios_combo = QComboBox()
+        self.restore_placeholder()
+        self.scenarios_combo.setStyleSheet(""" QComboBox { color: 'white';}
+                                                    QComboBox QAbstractItemView {color: 'white'; }""")
 
         self.noise_label = QLabel("Noise Level (SNR):")
         self.noise_input = QLineEdit()
+        self.noise_input.setMaximumWidth(100)
         self.noise_input.setPlaceholderText("1-9999")
         self.noise_input.setStyleSheet("color : 'white'")
+        self.noise_input.setFixedWidth(65)
         self.noise_input.setValidator(QIntValidator(1, 1000))
 
         self.sampling_frequency_label= QLabel(f"F_sampling=Hz")
+
         self.max_frequency_label = QLabel(f"{2} F_max")
+        def add_separator():
+            separator = QFrame()
+            separator.setFrameShape(QFrame.VLine)
+            separator.setFrameShadow(QFrame.Sunken)
+            separator.setStyleSheet("border: 2px solid gray;") 
+            control_layout.addWidget(separator)
 
         control_layout.addWidget(self.load_button)
+        add_separator()
         control_layout.addWidget(self.compose_button)
         control_layout.addWidget(self.cos_sin_expression)
+        add_separator()
         control_layout.addWidget(self.sampling_label)
         control_layout.addWidget(self.sampling_slider)
+        add_separator()
         control_layout.addLayout(v_layout_for_label_of_frequencies)
+        add_separator()
         control_layout.addWidget(self.reconstruction_label)
         control_layout.addWidget(self.reconstruction_combo)
+        add_separator()
         control_layout.addWidget(self.noise_label)
         control_layout.addWidget(self.noise_input)
+        add_separator()
+        control_layout.addWidget(self.scenarios_label)
+        control_layout.addWidget(self.scenarios_combo)
         
         v_layout_for_label_of_frequencies.addWidget(self.max_frequency_label)
         v_layout_for_label_of_frequencies.addWidget(self.sampling_frequency_label)
@@ -85,3 +109,10 @@ class UI(QMainWindow):
         main_layout.addLayout(graph_layout)
         main_layout.addLayout(control_layout)
         main_widget.setLayout(main_layout)
+
+    def restore_placeholder(self):
+        self.scenarios_combo.clear()
+        self.scenarios_combo.addItem("Select a Scenario")
+        self.scenarios_combo.addItems(
+            ["Scenario 1", "Scenario 2", "Scenario 3"])
+        self.scenarios_combo.setItemData(0, 0, Qt.UserRole - 1)

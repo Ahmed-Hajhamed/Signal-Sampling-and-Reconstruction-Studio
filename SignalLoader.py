@@ -38,7 +38,6 @@ class SignalLoader:
         return self.maximum_freq
 
     def add_noise(self, snr):
-        # Add noise to the signal based on SNR
         signal = self.signal_data[1]
         if self.noisy_signal is not None:
             self.signal_data[1] = signal - self.noisy_signal

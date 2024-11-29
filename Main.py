@@ -15,6 +15,7 @@ class SamplingTheoryStudio(UI):
         self.signal_loader = SignalLoader()
         self.signal =None
         self.method = self.reconstruction_combo.currentText()
+        self.current_scenario = None
         self.load_signal()
         self.sampling_frequency_label.setText(f"F_sampling={self.sampling_frequency}Hz")
         self.max_frequency_label.setText(f"{2} F_max")
@@ -23,6 +24,7 @@ class SamplingTheoryStudio(UI):
         self.noise_input.textChanged.connect(self.update_noise_level)
         self.sampling_slider.valueChanged.connect(self.update_sampling_frequency)
         self.reconstruction_combo.currentIndexChanged.connect(self.change_reconstruction_method)
+        self.scenarios_combo.currentIndexChanged.connect(self.load_test_scenario)
 
         self.compose_line_edit_is_removed = False
         self.update_plot()
@@ -39,7 +41,10 @@ class SamplingTheoryStudio(UI):
         self.frequency_domain_plot.clear()
 
         offsets = [-self.sampling_frequency, self.sampling_frequency]   
-        
+
+        self.max_frequency_label.setText(f"{self.sampling_slider.value()/100} F_max")
+        self.sampling_frequency_label.setText(f"F_sampling={int(self.sampling_frequency)}Hz")
+
         if self.signal.size > 0:
             self.original_signal_plot.plot(self.signal[0], self.signal[1], color ='blue')
             self.original_signal_plot.plot(self.sampled_points[0], self.sampled_points[1],
@@ -72,7 +77,7 @@ class SamplingTheoryStudio(UI):
             self.signal = self.signal_loader.get_loaded_signal()
         else:
             self.signal = self.signal_loader.get_loaded_signal()
-
+        self.restore_placeholder()
         self.max_frequency = self.signal_loader.get_maximum_frequency()
         self.sampling_frequency = 2 * self.max_frequency
         self.sampled_points = SignalProcessor.sample_signal(self.signal, self.sampling_frequency)
@@ -93,6 +98,12 @@ class SamplingTheoryStudio(UI):
         elif self.compose_line_edit_is_removed and len(self.cos_sin_expression.text())==0:
             self.signal_loader = SignalLoader()
             self.compose_line_edit_is_removed = False
+        if (expression != self.current_scenario):
+            self.restore_placeholder()
+        self.signal = self.signal_loader.get_loaded_signal()
+        self.max_frequency = self.signal_loader.get_maximum_frequency()
+        self.sampling_frequency = 2 * self.max_frequency
+        self.sampled_points = SignalProcessor.sample_signal(self.signal, self.sampling_frequency)
 
         self.update_plot()
 
@@ -101,8 +112,6 @@ class SamplingTheoryStudio(UI):
         self.sampling_frequency = int(value * self.max_frequency)
         self.sampling_frequency = 1 if self.sampling_frequency == 0 else self.sampling_frequency
         self.sampled_points = SignalProcessor.sample_signal(self.signal, self.sampling_frequency)
-        self.max_frequency_label.setText(f"{value} F_max")
-        self.sampling_frequency_label.setText(f"F_sampling={self.sampling_frequency}Hz")
         self.update_plot()
 
     def update_noise_level(self, value):
@@ -120,12 +129,32 @@ class SamplingTheoryStudio(UI):
 
         self.update_plot()
 
-    def change_reconstruction_method(self, index):
+    def change_reconstruction_method(self):
         self.method = self.reconstruction_combo.currentText()
         self.recovered_signal = SignalProcessor.recover_signal(self.signal[0],self.sampled_points, 
                                                  self.sampling_frequency, self.method)
         self.update_plot()
         
+    def load_test_scenario(self):
+        current_scenario = self.scenarios_combo.currentText()
+        if current_scenario == 'Scenario 1':
+            current_scenario = 'cos(8t)'
+            self.reconstruction_combo.setCurrentIndex(0)
+
+        elif current_scenario == 'Scenario 2':
+            self.reconstruction_combo.setCurrentIndex(1)
+            current_scenario = 'sin(5t)+sin(15t)'
+
+        elif current_scenario == 'Scenario 3':
+            self.reconstruction_combo.setCurrentIndex(2)
+            current_scenario = 'sin(2t)'
+        else :
+            return
+        self.current_scenario = current_scenario
+        self.change_reconstruction_method()
+        self.cos_sin_expression.setText(self.current_scenario)
+        self.compose_signal(self.current_scenario)
+
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     window = SamplingTheoryStudio()
