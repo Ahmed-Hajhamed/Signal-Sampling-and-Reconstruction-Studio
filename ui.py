@@ -186,6 +186,7 @@ class SamplingTheoryStudio(QMainWindow):
     def update_sampling_frequency(self, value):
         value = value/100
         self.sampling_frequency = int(value * self.max_frequency)
+        self.sampling_frequency = 1 if self.sampling_frequency == 0 else self.sampling_frequency
         self.sampled_points = self.signal_processor.sample_signal(self.signal, self.sampling_frequency)
         self.max_frequency_label.setText(f"{value} F_max")
         self.sampling_frequency_label.setText(f"F_sampling={self.sampling_frequency}Hz")
