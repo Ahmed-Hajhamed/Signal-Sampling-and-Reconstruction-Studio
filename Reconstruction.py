@@ -1,6 +1,5 @@
 import numpy as np
 from scipy.fft import dct
-import numpy as np
 from scipy.fft import fft, ifft, fftfreq
 from scipy.interpolate import CubicSpline
 
@@ -37,7 +36,7 @@ class Reconstruction:
         N = len(sampled_amplitudes)
         signal_fft = fft(sampled_amplitudes)
 
-        freq = fftfreq(N, d=(time[1] - time[0]))
+        freq = fftfreq(N, d=(time[5] - time[4]))
         cutoff_freq = sampling_frequency/2
         signal_fft[np.abs(freq) > cutoff_freq] = 0
         reconstructed_signal = np.real(ifft(signal_fft))
