@@ -1,29 +1,23 @@
-from PyQt5.QtWidgets import (
-    QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QGridLayout,
-    QPushButton, QComboBox, QSlider, QLabel, QMessageBox, QLineEdit, QFileDialog
-)
+from PyQt5.QtWidgets import ( QMessageBox, QFileDialog )
 from UI import UI
-from PyQt5.QtCore import Qt
 import pyqtgraph as pg
-from PyQt5.QtGui import QIntValidator
 from SignalLoader import SignalLoader
 import SignalMixer
-from SignalProcessor import SignalProcessor
+import SignalProcessor
 from qt_material import apply_stylesheet
 from PyQt5.QtWidgets import QApplication
 import sys
+
 
 class SamplingTheoryStudio(UI):
     def __init__(self):
         super().__init__()
         self.signal_loader = SignalLoader()
-        self.signal_processor = SignalProcessor()
-
-        self.max_frequency = self.signal_loader.maximum_freq
-        self.sampling_frequency = 2 * self.max_frequency
+        self.signal =None
+        self.method = self.reconstruction_combo.currentText()
+        self.load_signal()
         self.sampling_frequency_label.setText(f"F_sampling={self.sampling_frequency}Hz")
         self.max_frequency_label.setText(f"{2} F_max")
-
         self.load_button.clicked.connect(self.load_signal)
         self.cos_sin_expression.textChanged.connect(self.compose_signal)
         self.noise_input.textChanged.connect(self.update_noise_level)
@@ -34,14 +28,10 @@ class SamplingTheoryStudio(UI):
         self.update_plot()
 
     def update_plot(self):
-        self.signal = self.signal_loader.get_loaded_signal()
-        self.max_frequency = self.signal_loader.get_maximum_frequency()
-        self.method = self.reconstruction_combo.currentText()
-        self.sampled_points = self.signal_processor.sample_signal(self.signal, self.sampling_frequency)
-        self.recovered_signal = self.signal_processor.recover_signal(self.signal[0], self.sampled_points,
+        self.recovered_signal = SignalProcessor.recover_signal(self.signal[0], self.sampled_points,
                                            self.sampling_frequency, method=self.method)
-        self.difference_signal = self.signal_processor.calculate_difference(self.signal, self.recovered_signal)
-        self.frequency_domain = self.signal_processor.frequency_domain(self.recovered_signal, self.sampling_frequency)
+        self.difference_signal = SignalProcessor.calculate_difference(self.signal, self.recovered_signal)
+        self.frequency_domain = SignalProcessor.frequency_domain(self.recovered_signal, self.sampling_frequency)
 
         self.original_signal_plot.clear()
         self.reconstructed_signal_plot.clear()
@@ -62,26 +52,34 @@ class SamplingTheoryStudio(UI):
         if self.frequency_domain.size > 0:
                 frequency_components = self.frequency_domain[0]
                 magnitude_components = self.frequency_domain[1]
-                original_band_mask = (self.frequency_domain[0] >= -self.sampling_frequency) & (self.frequency_domain[0] <= self.sampling_frequency)
+                original_band_mask = (self.frequency_domain[0] >= -self.sampling_frequency)\
+                                            & (self.frequency_domain[0] <= self.sampling_frequency)
                 self.frequency_domain_plot.plot(frequency_components[original_band_mask], 
-                                magnitude_components[original_band_mask], 
-                            pen=pg.mkPen(color='white', width=2))
+                                                magnitude_components[original_band_mask], 
+                                                pen=pg.mkPen(color='white', width=2))
                 
                 for i, offset in enumerate(offsets):
-                         repeated_band_mask = (frequency_components + offset >= -self.max_frequency) & (frequency_components + offset <=self.max_frequency)
+                         repeated_band_mask = (frequency_components + offset >= -self.max_frequency)\
+                                             & (frequency_components + offset <=self.max_frequency)
                          self.frequency_domain_plot.plot(frequency_components[repeated_band_mask] + offset, 
                                    magnitude_components[repeated_band_mask], 
                                    pen=pg.mkPen(color='r'))
 
-                    
     def load_signal(self):
-        file_path, _ = QFileDialog.getOpenFileName(None, "Open CSV File", "", "CSV Files (*.csv)")
-        self.signal_loader.load_signal_from_file(file_path)
+        if self.signal is not None:
+            file_path, _ = QFileDialog.getOpenFileName(None, "Open CSV File", "", "CSV Files (*.csv)")
+            self.signal_loader.load_signal_from_file(file_path)
+            self.signal = self.signal_loader.get_loaded_signal()
+        else:
+            self.signal = self.signal_loader.get_loaded_signal()
+
+        self.max_frequency = self.signal_loader.get_maximum_frequency()
+        self.sampling_frequency = 2 * self.max_frequency
+        self.sampled_points = SignalProcessor.sample_signal(self.signal, self.sampling_frequency)
         self.cos_sin_expression.setText("")
         self.update_plot()
 
     def compose_signal(self, expression):
-
         if len(SignalMixer.components) > 0:
             self.compose_line_edit_is_removed = True
 
@@ -89,7 +87,6 @@ class SamplingTheoryStudio(UI):
         SignalMixer.add_components(expression)
 
         if len(SignalMixer.components) > 0:
-
             SignalMixer.add_sinusoidal_component()
             self.signal_loader.load_signal_from_mixer()
 
@@ -102,7 +99,8 @@ class SamplingTheoryStudio(UI):
     def update_sampling_frequency(self, value):
         value = value/100
         self.sampling_frequency = int(value * self.max_frequency)
-        self.sampled_points = self.signal_processor.sample_signal(self.signal, self.sampling_frequency)
+        self.sampling_frequency = 1 if self.sampling_frequency == 0 else self.sampling_frequency
+        self.sampled_points = SignalProcessor.sample_signal(self.signal, self.sampling_frequency)
         self.max_frequency_label.setText(f"{value} F_max")
         self.sampling_frequency_label.setText(f"F_sampling={self.sampling_frequency}Hz")
         self.update_plot()
@@ -124,7 +122,7 @@ class SamplingTheoryStudio(UI):
 
     def change_reconstruction_method(self, index):
         self.method = self.reconstruction_combo.currentText()
-        self.recovered_signal = self.signal_processor.recover_signal(self.signal[0],self.sampled_points, 
+        self.recovered_signal = SignalProcessor.recover_signal(self.signal[0],self.sampled_points, 
                                                  self.sampling_frequency, self.method)
         self.update_plot()
         

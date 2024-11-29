@@ -56,5 +56,4 @@ def add_sinusoidal_component():
             composed_signal = signal
 
 def get_composed_signal():
-    # Return the composed signal
     return composed_signal
