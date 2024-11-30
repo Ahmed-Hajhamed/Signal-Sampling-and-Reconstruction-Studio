@@ -69,6 +69,7 @@ class SamplingTheoryStudio(UI):
                                    pen=pg.mkPen(color='r'))
 
     def load_signal(self):
+        SignalMixer.components.clear()
         if self.signal is not None:
             file_path, _ = QFileDialog.getOpenFileName(None, "Open CSV File", "", "CSV Files (*.csv)")
             self.signal_loader.load_signal_from_file(file_path)
