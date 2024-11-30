@@ -7,7 +7,7 @@ import SignalProcessor
 from qt_material import apply_stylesheet
 from PyQt5.QtWidgets import QApplication
 import sys
-
+import numpy as np
 
 class SamplingTheoryStudio(UI):
     def __init__(self):
@@ -17,8 +17,6 @@ class SamplingTheoryStudio(UI):
         self.method = self.reconstruction_combo.currentText()
         self.current_scenario = None
         self.load_signal()
-        self.sampling_frequency_label.setText(f"F_sampling={self.sampling_frequency}Hz")
-        self.max_frequency_label.setText(f"{2} F_max")
         self.load_button.clicked.connect(self.load_signal)
         self.cos_sin_expression.textChanged.connect(self.compose_signal)
         self.noise_input.textChanged.connect(self.update_noise_level)
@@ -104,13 +102,11 @@ class SamplingTheoryStudio(UI):
         self.max_frequency = self.signal_loader.get_maximum_frequency()
         self.sampling_frequency = 2 * self.max_frequency
         self.sampled_points = SignalProcessor.sample_signal(self.signal, self.sampling_frequency)
-
         self.update_plot()
 
     def update_sampling_frequency(self, value):
         value = value/100
-        self.sampling_frequency = int(value * self.max_frequency)
-        self.sampling_frequency = 1 if self.sampling_frequency == 0 else self.sampling_frequency
+        self.sampling_frequency = np.ceil(value * self.max_frequency)
         self.sampled_points = SignalProcessor.sample_signal(self.signal, self.sampling_frequency)
         self.update_plot()
 
@@ -147,7 +143,7 @@ class SamplingTheoryStudio(UI):
 
         elif current_scenario == 'Scenario 3':
             self.reconstruction_combo.setCurrentIndex(2)
-            current_scenario = 'sin(2t)'
+            current_scenario = 'sin(2t)+cos(2t)+sin(t)'
         else :
             return
         self.current_scenario = current_scenario

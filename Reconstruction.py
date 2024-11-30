@@ -26,7 +26,7 @@ def fourier(sampled_points, sampling_frequency):
 
     N = len(sampled_amplitudes)
     signal_fft = fft(sampled_amplitudes)
-    if ((time[1] - time[0]) > 0):
+    if ((time[1] - time[0]) > 0.0):
         freq = fftfreq(N, d=(time[1] - time[0]))
     else:
         freq = fftfreq(N, d=(0.1))

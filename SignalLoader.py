@@ -32,7 +32,7 @@ class SignalLoader:
 
         for component in SignalMixer.components:
             frequencies.append(component["frequency"])
-        self.maximum_freq = 2 * np.pi *max(frequencies)
+        self.maximum_freq =max(frequencies)
 
     def get_maximum_frequency(self):
         return self.maximum_freq

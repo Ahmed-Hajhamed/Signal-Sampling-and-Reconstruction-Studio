@@ -74,8 +74,7 @@ class UI(QMainWindow):
         self.noise_input.setFixedWidth(65)
         self.noise_input.setValidator(QIntValidator(1, 1000))
 
-        self.sampling_frequency_label= QLabel(f"F_sampling=Hz")
-
+        self.sampling_frequency_label= QLabel(f"F_sampling=4Hz")
         self.max_frequency_label = QLabel(f"{2} F_max")
         def add_separator():
             separator = QFrame()
