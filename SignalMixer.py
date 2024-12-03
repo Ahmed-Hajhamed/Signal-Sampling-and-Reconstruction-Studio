@@ -24,9 +24,9 @@ def create_signal(type_of_signal, amplitude, frequency):
     global time
     
     if type_of_signal == "cos":
-        signal = amplitude * np.cos( frequency * time)
+        signal = amplitude * np.cos( 2 * np.pi * frequency * time)
     elif type_of_signal == "sin":
-        signal = amplitude * np.sin( frequency * time)
+        signal = amplitude * np.sin( 2 * np.pi * frequency * time)
     else:
         raise ValueError ("Invalid Sinusoidal")
 

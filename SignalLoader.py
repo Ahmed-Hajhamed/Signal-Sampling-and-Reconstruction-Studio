@@ -1,11 +1,34 @@
+from xml.etree.ElementPath import find
 import numpy as np
 import pandas as pd
 import SignalMixer
 
+# def find_maximum_freq(signal):
+#     time = signal[0]
+#     amplitude = signal[1]
+#     time_diff = np.diff(time)
+#     sampling_rate = 1 / np.mean(time_diff) #equal 125 for defualt signal
+
+#     n = len(amplitude)
+#     fft_result = np.fft.fft(amplitude)
+#     frequncies = np.fft.fftfreq(n, d= 1 /sampling_rate)
+#     print(frequncies)
+#     print(frequncies.shape)
+
+#     positive_freq = frequncies[:n//2]
+#     magnitudes = np.abs(fft_result[:n//2])
+#     print(max(magnitudes))
+#     print(positive_freq)
+#     print(np.argmax(magnitudes))
+#     max_freq = positive_freq[np.argmax(magnitudes)]
+#     print(max_freq)
+
+#     return max_freq
+
 
 class SignalLoader:
     def __init__(self):
-        self.load_signal_from_file('file_of_signal\Pulse Oximeter Signal.csv')
+        self.load_signal_from_file('file_of_signal/Pulse Oximeter Signal.csv')
         self.noisy_signal = None
 
     def load_signal_from_file(self, filepath):
@@ -21,8 +44,9 @@ class SignalLoader:
                 self.signal_data = self.signal_data[:, cropped_indices]  
             else:
                 print("Warning: No data points found for the first 2 seconds of the signal.")
-
-            self.maximum_freq = max(np.fft.fftfreq(len(amplitude_data), d= 1/(time_data[1] - time_data[0])))
+            
+            self.maximum_freq = 1 / (2 * (time_data[1] - time_data[0]))
+            
 
     def load_signal_from_mixer(self):
         frequencies = []
@@ -32,7 +56,8 @@ class SignalLoader:
 
         for component in SignalMixer.components:
             frequencies.append(component["frequency"])
-        self.maximum_freq =max(frequencies) / (2 * np.pi) 
+        self.maximum_freq =max(frequencies) 
+        print(self.maximum_freq) 
 
     def get_maximum_frequency(self):
         return self.maximum_freq
