@@ -22,7 +22,7 @@ class SignalLoader:
             else:
                 print("Warning: No data points found for the first 2 seconds of the signal.")
 
-            self.maximum_freq = 1 / (2 * (time_data[1] - time_data[0]))
+            self.maximum_freq = max(np.fft.fftfreq(len(amplitude_data), d= 1/(time_data[1] - time_data[0])))
 
     def load_signal_from_mixer(self):
         frequencies = []
@@ -32,7 +32,7 @@ class SignalLoader:
 
         for component in SignalMixer.components:
             frequencies.append(component["frequency"])
-        self.maximum_freq =max(frequencies) 
+        self.maximum_freq =max(frequencies) / (2 * np.pi) 
 
     def get_maximum_frequency(self):
         return self.maximum_freq
