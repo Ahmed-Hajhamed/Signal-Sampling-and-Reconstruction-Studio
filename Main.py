@@ -14,6 +14,7 @@ class SamplingTheoryStudio(UI):
         super().__init__()
         self.signal_loader = SignalLoader()
         self.signal =None
+        self.signal_orignal_for_diff = None
         self.method = self.reconstruction_combo.currentText()
         self.current_scenario = None
         self.load_signal()
@@ -23,14 +24,14 @@ class SamplingTheoryStudio(UI):
         self.sampling_slider.valueChanged.connect(self.update_sampling_frequency)
         self.reconstruction_combo.currentIndexChanged.connect(self.change_reconstruction_method)
         self.scenarios_combo.currentIndexChanged.connect(self.load_test_scenario)
-
         self.compose_line_edit_is_removed = False
         self.update_plot()
 
     def update_plot(self):
         self.recovered_signal = SignalProcessor.recover_signal(self.signal[0], self.sampled_points,
                                            self.sampling_frequency, method=self.method)
-        self.difference_signal = SignalProcessor.calculate_difference(self.signal, self.recovered_signal)
+        self.difference_signal_plot.setYRange(0, max(self.signal[1]))
+        self.difference_signal = SignalProcessor.calculate_difference(self.signal_orignal_for_diff, self.recovered_signal)
         self.frequency_domain = SignalProcessor.frequency_domain(self.recovered_signal, self.sampling_frequency)
 
         self.original_signal_plot.clear()
@@ -70,6 +71,7 @@ class SamplingTheoryStudio(UI):
 
     def load_signal(self):
         SignalMixer.components.clear()
+        self.signal_loader.noisy_signal = None
         if self.signal is not None:
             file_path, _ = QFileDialog.getOpenFileName(None, "Open CSV File", "", "CSV Files (*.csv)")
             self.signal_loader.load_signal_from_file(file_path)
@@ -81,6 +83,8 @@ class SamplingTheoryStudio(UI):
         self.sampling_frequency = 2 * self.max_frequency
         self.sampled_points = SignalProcessor.sample_signal(self.signal, self.sampling_frequency)
         self.cos_sin_expression.setText("")
+        self.noise_input.clear()
+        self.signal_orignal_for_diff = self.signal.copy()
         self.update_plot()
 
     def compose_signal(self, expression):
@@ -123,12 +127,13 @@ class SamplingTheoryStudio(UI):
             if self.signal_loader.noisy_signal is not None:
                 self.signal_loader.signal_data[1] = self.signal_loader.signal_data[1] - self.signal_loader.noisy_signal
                 self.signal_loader.noisy_signal = None
-
+        self.update_sampling_frequency(self.sampling_slider.value())
         self.update_plot()
 
     def change_reconstruction_method(self):
         self.method = self.reconstruction_combo.currentText()
         self.recovered_signal = SignalProcessor.recover_signal(self.signal[0],self.sampled_points, 
+        
                                                  self.sampling_frequency, self.method)
         self.update_plot()
         
@@ -136,14 +141,14 @@ class SamplingTheoryStudio(UI):
         current_scenario = self.scenarios_combo.currentText()
         if current_scenario == 'Scenario 1':
             current_scenario = 'cos(8t)'
-            self.reconstruction_combo.setCurrentIndex(0)
+            self.reconstruction_combo.setCurrentIndex(1)
 
         elif current_scenario == 'Scenario 2':
-            self.reconstruction_combo.setCurrentIndex(1)
+            self.reconstruction_combo.setCurrentIndex(2)
             current_scenario = 'sin(5t)+sin(15t)'
 
         elif current_scenario == 'Scenario 3':
-            self.reconstruction_combo.setCurrentIndex(2)
+            self.reconstruction_combo.setCurrentIndex(0)
             current_scenario = 'sin(2t)+cos(2t)+sin(t)'
         else :
             return

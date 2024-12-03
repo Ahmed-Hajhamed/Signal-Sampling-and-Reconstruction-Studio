@@ -5,7 +5,7 @@ import SignalMixer
 
 class SignalLoader:
     def __init__(self):
-        self.load_signal_from_file('file_of_signal/ECG Signal (Lead AVR).csv')
+        self.load_signal_from_file('file_of_signal\Pulse Oximeter Signal.csv')
         self.noisy_signal = None
 
     def load_signal_from_file(self, filepath):
@@ -32,7 +32,7 @@ class SignalLoader:
 
         for component in SignalMixer.components:
             frequencies.append(component["frequency"])
-        self.maximum_freq =max(frequencies)
+        self.maximum_freq =max(frequencies) 
 
     def get_maximum_frequency(self):
         return self.maximum_freq

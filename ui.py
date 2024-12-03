@@ -14,7 +14,7 @@ class UI(QMainWindow):
 
         main_widget = QWidget()
         self.setCentralWidget(main_widget)
-
+        self.label_style_sheet = "font-size: 15px;"
         main_layout = QVBoxLayout()
         graph_layout = QGridLayout()
         v_layout_for_label_of_frequencies = QVBoxLayout()
@@ -39,34 +39,38 @@ class UI(QMainWindow):
         graph_layout.addWidget(self.frequency_domain_plot, 1, 1)
 
         self.load_button = QPushButton("Load Signal")
+        self.load_button.setStyleSheet(self.label_style_sheet)
         self.compose_button = QLabel("Compose Signal:")
-
+        self.compose_button.setStyleSheet(self.label_style_sheet)
         self.cos_sin_expression = QLineEdit()
         self.cos_sin_expression.setPlaceholderText("Enter an expression")
         self.cos_sin_expression.setStyleSheet("color : 'white'")
         self.cos_sin_expression.setFixedWidth(150)
 
         self.sampling_label = QLabel("Sampling Frequency:")
+        self.sampling_label.setStyleSheet(self.label_style_sheet)
         self.sampling_slider = QSlider(Qt.Horizontal)
         self.sampling_slider.setMinimum(10)
         self.sampling_slider.setMaximum(400)
         self.sampling_slider.setValue(200)
         self.sampling_slider.setMinimumWidth(100)
-
         self.reconstruction_label = QLabel("Reconstruction Method:")
+        self.reconstruction_label.setStyleSheet(self.label_style_sheet)
         self.reconstruction_combo = QComboBox()
         self.reconstruction_combo.addItems(
-            ["Whittaker Shannon", "Fourier", "Spline"])
+            ["Spline", "Whittaker Shannon", "Fourier"])
         self.reconstruction_combo.setStyleSheet(""" QComboBox { color: 'white';}
                                                     QComboBox QAbstractItemView {color: 'white'; }""")
         
         self.scenarios_label = QLabel("Test Scenarios:")
+        self.scenarios_label.setStyleSheet(self.label_style_sheet)
         self.scenarios_combo = QComboBox()
         self.restore_placeholder()
         self.scenarios_combo.setStyleSheet(""" QComboBox { color: 'white';}
                                                     QComboBox QAbstractItemView {color: 'white'; }""")
 
         self.noise_label = QLabel("Noise Level (SNR):")
+        self.noise_label.setStyleSheet(self.label_style_sheet)
         self.noise_input = QLineEdit()
         self.noise_input.setMaximumWidth(100)
         self.noise_input.setPlaceholderText("1-9999")
@@ -75,7 +79,11 @@ class UI(QMainWindow):
         self.noise_input.setValidator(QIntValidator(1, 1000))
 
         self.sampling_frequency_label= QLabel(f"F_sampling=4Hz")
+        self.sampling_frequency_label.setStyleSheet(self.label_style_sheet)
         self.max_frequency_label = QLabel(f"4 F_max")
+        self.max_frequency_label.setStyleSheet(self.label_style_sheet)
+        # self.sampling_frequency_label.setFixedWidth(130)
+        # self.max_frequency_label.setFixedWidth(130)
         def add_separator():
             separator = QFrame()
             separator.setFrameShape(QFrame.VLine)

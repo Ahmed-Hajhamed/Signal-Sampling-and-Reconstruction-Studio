@@ -6,7 +6,7 @@ def whittaker_shannon(original_time_points, sampled_points, sampling_frequency):
     """
     Perform Whittaker-Shannon reconstruction of a signal from uniformly taken samples.
     """
-    sampling_interval = (1 / sampling_frequency)
+    sampling_interval = (1.0 / sampling_frequency)
     time_points = original_time_points
     sampled_times = sampled_points[0]
     sampled_amplitudes = sampled_points[1]

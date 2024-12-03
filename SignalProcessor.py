@@ -12,8 +12,8 @@ def sample_signal(signal, sampling_frequency):
     if sampling_frequency is None:
         raise ValueError("Sampling frequency must be specified.")
     if sampling_frequency != 0:
-        sampling_interval = (1 / sampling_frequency)
-        sampled_points_time = np.arange(0, 2, sampling_interval)
+        sampling_interval = (1.0 / sampling_frequency)
+        sampled_points_time = np.arange(time_data[0], time_data[-1], sampling_interval)
         
         sampled_indices = np.searchsorted(time_data, sampled_points_time)
 
