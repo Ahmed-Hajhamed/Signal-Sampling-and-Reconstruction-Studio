@@ -13,7 +13,7 @@ def sample_signal(signal, sampling_frequency):
         raise ValueError("Sampling frequency must be specified.")
     if sampling_frequency != 0:
         sampling_interval = (1.0 / sampling_frequency)
-        sampled_points_time = np.arange(time_data[0], time_data[-1], sampling_interval)
+        sampled_points_time = np.arange(time_data[0], time_data[-1]+sampling_interval, sampling_interval)
         
         sampled_indices = np.searchsorted(time_data, sampled_points_time)
 
@@ -44,26 +44,52 @@ def recover_signal(original_time_points, sampled_points, sampling_frequency, met
     return recovered_signal
 
 def calculate_difference(signal, recovered_signal):
-    """
-    Calculates the error in the recovered signal (difference between original and recovered signal).
-        """
-    original_signal_time = signal[0]
-    original_signal_values = signal[1]
-    recovered_signal_time = recovered_signal[0]
-    recovered_signal_values = recovered_signal[1]
+    # Example input arrays
+    # Array 1: Smaller array (time and values)
+    arr1 = signal
 
-    recovered_signal_values = align_signals(original_signal_time,
-                                                recovered_signal_time, recovered_signal_values)
+    # Array 2: Larger array (time and values)
+    arr2 = recovered_signal
+    # Extract time and values
+    time1, values1 = arr1[0], arr1[1]
+    time2, values2 = arr2[0], arr2[1]
 
-    recovered_signal_values = np.pad(recovered_signal_values,
-                                        (0, len(original_signal_values) - len(recovered_signal_values)),
-                                        "constant")
+    # Interpolate values1 to match time2
+    interp_func = interp1d(time1, values1, kind='cubic', fill_value="extrapolate")
+    values1_interpolated = interp_func(time2)
 
-    magnitude_difference = np.abs(original_signal_values - recovered_signal_values)
+    # Compute the difference
+    difference = abs(values1_interpolated - values2)
 
-    signals_difference = np.array([original_signal_time, magnitude_difference])
-    
-    return signals_difference
+    # Resulting time and difference array
+    result = np.array([time2, difference])
+
+    # Output the difference
+    # print("Difference shape:", result.shape)
+    return result
+
+
+# def calculate_difference(signal, recovered_signal):
+#     """
+#     Calculates the error in the recovered signal (difference between original and recovered signal).
+#         """
+#     original_signal_time = signal[0]
+#     original_signal_values = signal[1]
+#     recovered_signal_time = recovered_signal[0]
+#     recovered_signal_values = recovered_signal[1]
+
+#     recovered_signal_values = align_signals(original_signal_time,
+#                                                 recovered_signal_time, recovered_signal_values)
+
+#     recovered_signal_values = np.pad(recovered_signal_values,
+#                                         (0, len(original_signal_values) - len(recovered_signal_values)),
+#                                         "constant")
+
+
+#     magnitude_difference = abs(original_signal_values - recovered_signal_values)
+#     normalized_error = magnitude_difference / (np.max(original_signal_values) - np.min(original_signal_values))
+#     signals_difference = np.array([original_signal_time, magnitude_difference])
+#     return signals_difference
 
 def frequency_domain(recovered_signal, sampling_frequency):
     """
@@ -90,3 +116,8 @@ def align_signals(original_time, recovered_time, recovered_values):
     interp_function = interp1d(recovered_time, recovered_values, bounds_error=False, fill_value="extrapolate")
     aligned_recovered_values = interp_function(original_time)
     return aligned_recovered_values
+
+def calculate_padding(array_to_pad, reference_array):
+    rows_diff = reference_array.shape[0] - array_to_pad.shape[0]
+    cols_diff = reference_array.shape[1] - array_to_pad.shape[1]
+    return ((0, rows_diff), (0, cols_diff))  # Padding only on the bottom and right

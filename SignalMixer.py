@@ -5,6 +5,17 @@ components = []
 composed_signal = np.array([])
 time = np.array([])
 
+frequencies = [] 
+
+def max_freq():
+    global components
+    global frequencies
+
+    for component in components:
+        frequencies.append(component["frequency"])
+    maximum_freq =max(frequencies)
+    
+    return maximum_freq
 
 def add_components(expression: str):
     expression = expression.lower()
@@ -19,6 +30,7 @@ def add_components(expression: str):
         frequency = int(match[3]) if match[3] else 1
 
         components.append({'sign': sign, 'type': func_type, 'amplitude': amplitude, 'frequency': frequency})
+    
 
 def create_signal(type_of_signal, amplitude, frequency):
     global time
@@ -33,17 +45,18 @@ def create_signal(type_of_signal, amplitude, frequency):
     return signal
 
 
-def set_time(duration):
+def set_time():
     global time
-    sampling_rate =1000 * duration
-    time = np.linspace(0, duration, int(sampling_rate))
+    sampling_rate =100
+    # time = np.linspace(0, 2, int(sampling_rate))
+    time = np.arange(0, 2 +0.008, 0.008)
 
 
 def add_sinusoidal_component():
     # Add a sinusoidal component to the signal
     global components
     global composed_signal
-    set_time(2)
+    set_time()
     composed_signal = np.array([])
 
     if components:
@@ -54,6 +67,6 @@ def add_sinusoidal_component():
             composed_signal = composed_signal + signal if component['sign'] == "+" else composed_signal - signal
         else:
             composed_signal = signal
-
+    
 def get_composed_signal():
     return composed_signal

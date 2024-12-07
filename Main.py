@@ -1,5 +1,5 @@
 from PyQt5.QtWidgets import ( QMessageBox, QFileDialog )
-from UI import UI
+from ui import UI
 import pyqtgraph as pg
 from SignalLoader import SignalLoader
 import SignalMixer
@@ -28,10 +28,13 @@ class SamplingTheoryStudio(UI):
         self.update_plot()
 
     def update_plot(self):
+        print("signal shape:",self.signal)
         self.recovered_signal = SignalProcessor.recover_signal(self.signal[0], self.sampled_points,
                                            self.sampling_frequency, method=self.method)
         self.difference_signal_plot.setYRange(0, max(self.signal[1]))
         self.difference_signal = SignalProcessor.calculate_difference(self.signal_orignal_for_diff, self.recovered_signal)
+        print("recovered shape:",self.recovered_signal)
+        print("Difference shape:",self.difference_signal)
         self.frequency_domain = SignalProcessor.frequency_domain(self.recovered_signal, self.sampling_frequency)
 
         self.original_signal_plot.clear()

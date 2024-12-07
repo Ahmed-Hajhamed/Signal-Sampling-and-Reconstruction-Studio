@@ -14,7 +14,7 @@ class UI(QMainWindow):
 
         main_widget = QWidget()
         self.setCentralWidget(main_widget)
-        self.label_style_sheet = "font-size: 10px;"
+        self.label_style_sheet = "font-size: 15px;"
         main_layout = QVBoxLayout()
         graph_layout = QGridLayout()
         v_layout_for_label_of_frequencies = QVBoxLayout()

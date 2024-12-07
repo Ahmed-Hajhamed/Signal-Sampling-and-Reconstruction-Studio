@@ -33,7 +33,7 @@ class SignalLoader:
 
     def load_signal_from_file(self, filepath):
         if filepath:
-            self.signal_data = pd.read_csv(filepath)
+            self.signal_data = pd.read_csv(filepath, header= None)
             time_data = self.signal_data.iloc[:, 0].values
             amplitude_data = self.signal_data.iloc[:, 1].values
             self.signal_data = np.array([time_data, amplitude_data])
@@ -47,17 +47,19 @@ class SignalLoader:
             
             self.maximum_freq = 1 / (2 * (time_data[1] - time_data[0]))
             
+            
 
     def load_signal_from_mixer(self):
         frequencies = []
-        time_data = SignalMixer.time
         amplitude_data = SignalMixer.get_composed_signal()
-        self.signal_data = np.array([time_data, amplitude_data])
+        time_data = SignalMixer.time
 
         for component in SignalMixer.components:
             frequencies.append(component["frequency"])
         self.maximum_freq =max(frequencies) 
-        print(self.maximum_freq) 
+        # sampling_rate = (2*self.maximum_freq)
+        # time_data = np.linspace(0, 2, int(sampling_rate))
+        self.signal_data = np.array([time_data, amplitude_data])
 
     def get_maximum_frequency(self):
         return self.maximum_freq
