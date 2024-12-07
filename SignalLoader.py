@@ -69,9 +69,11 @@ class SignalLoader:
         if self.noisy_signal is not None:
             self.signal_data[1] = signal - self.noisy_signal
         signal_power = np.mean(signal ** 2)
+        snr = 10**(snr /10)
         noise_power = signal_power / snr
         random_generator = np.random.default_rng(1)
         self.noisy_signal = np.sqrt(noise_power) * random_generator.normal(size=signal.shape)
+        noise = np.random.normal(0, np.sqrt(noise_power), size=signal.shape)
         self.signal_data[1] = signal + self.noisy_signal
 
     def get_loaded_signal(self):

@@ -28,13 +28,10 @@ class SamplingTheoryStudio(UI):
         self.update_plot()
 
     def update_plot(self):
-        print("signal shape:",self.signal[1][:10])
         self.recovered_signal = SignalProcessor.recover_signal(self.signal[0], self.sampled_points,
                                            self.sampling_frequency, method=self.method)
-        print("recovered shape:",self.recovered_signal[1][:10])
         self.difference_signal_plot.setYRange(0, max(self.signal[1]))
         self.difference_signal = SignalProcessor.calculate_difference(self.signal_orignal_for_diff, self.recovered_signal)
-        print("Difference shape:",self.difference_signal[1][:10])
         self.frequency_domain = SignalProcessor.frequency_domain(self.recovered_signal, self.sampling_frequency)
 
         self.original_signal_plot.clear()
