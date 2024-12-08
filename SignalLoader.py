@@ -4,26 +4,26 @@ import pandas as pd
 import SignalMixer
 
 # def find_maximum_freq(signal):
-#     time = signal[0]
-#     amplitude = signal[1]
-#     time_diff = np.diff(time)
-#     sampling_rate = 1 / np.mean(time_diff) #equal 125 for defualt signal
+    # time = signal[0]
+    # amplitude = signal[1]
+    # time_diff = np.diff(time)
+    # sampling_rate = 1 / np.mean(time_diff) #equal 125 for defualt signal
 
-#     n = len(amplitude)
-#     fft_result = np.fft.fft(amplitude)
-#     frequncies = np.fft.fftfreq(n, d= 1 /sampling_rate)
-#     print(frequncies)
-#     print(frequncies.shape)
+    # n = len(amplitude)
+    # fft_result = np.fft.fft(amplitude)
+    # frequncies = np.fft.fftfreq(n, d= 1 /sampling_rate)
+    # print(frequncies)
+    # print(frequncies.shape)
 
-#     positive_freq = frequncies[:n//2]
-#     magnitudes = np.abs(fft_result[:n//2])
-#     print(max(magnitudes))
-#     print(positive_freq)
-#     print(np.argmax(magnitudes))
-#     max_freq = positive_freq[np.argmax(magnitudes)]
-#     print(max_freq)
+    # positive_freq = frequncies[:n//2]
+    # magnitudes = np.abs(fft_result[:n//2])
+    # print(max(magnitudes))
+    # print(positive_freq)
+    # print(np.argmax(magnitudes))
+    # max_freq = positive_freq[np.argmax(magnitudes)]
+    # print(max_freq)
 
-#     return max_freq
+    # return max_freq
 
 
 class SignalLoader:
@@ -38,7 +38,7 @@ class SignalLoader:
             amplitude_data = self.signal_data.iloc[:, 1].values
             self.signal_data = np.array([time_data, amplitude_data])
 
-            cropped_indices = np.where(time_data <= 2)[0]  # crop the first 2 seconds
+            cropped_indices = np.where(time_data <= 10)[0]  # crop
 
             if cropped_indices.size > 0: 
                 self.signal_data = self.signal_data[:, cropped_indices]  
@@ -46,6 +46,7 @@ class SignalLoader:
                 print("Warning: No data points found for the first 2 seconds of the signal.")
             
             self.maximum_freq = 1 / (2 * (time_data[1] - time_data[0]))
+            # self.maximum_freq =250
             
             
 
@@ -68,12 +69,15 @@ class SignalLoader:
         signal = self.signal_data[1]
         if self.noisy_signal is not None:
             self.signal_data[1] = signal - self.noisy_signal
-        signal_power = np.mean(signal ** 2)
+        signal_power = np.sqrt(np.mean(signal ** 2))
+        # signal_power = 10 * np.log10(signal_power)
+
         snr = 10**(snr /10)
         noise_power = signal_power / snr
+        # noise_power = 10**(noise_power/10)
         random_generator = np.random.default_rng(1)
         self.noisy_signal = np.sqrt(noise_power) * random_generator.normal(size=signal.shape)
-        noise = np.random.normal(0, np.sqrt(noise_power), size=signal.shape)
+        # self.noisy_signal = np.random.normal(0, np.sqrt(noise_power), size=signal.shape)
         self.signal_data[1] = signal + self.noisy_signal
 
     def get_loaded_signal(self):

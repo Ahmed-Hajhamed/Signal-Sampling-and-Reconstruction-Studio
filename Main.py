@@ -145,7 +145,7 @@ class SamplingTheoryStudio(UI):
             self.reconstruction_combo.setCurrentIndex(1)
 
         elif current_scenario == 'Scenario 2':
-            self.reconstruction_combo.setCurrentIndex(2)
+            self.reconstruction_combo.setCurrentIndex(1)
             current_scenario = 'sin(5t)+sin(15t)'
 
         elif current_scenario == 'Scenario 3':
@@ -157,6 +157,7 @@ class SamplingTheoryStudio(UI):
         self.change_reconstruction_method()
         self.cos_sin_expression.setText(self.current_scenario)
         self.compose_signal(self.current_scenario)
+        self.update_plot()
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

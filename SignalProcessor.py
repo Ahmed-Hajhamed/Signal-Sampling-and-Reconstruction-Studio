@@ -43,32 +43,6 @@ def recover_signal(original_time_points, sampled_points, sampling_frequency, met
     
     return recovered_signal
 
-# def calculate_difference(signal, recovered_signal):
-#     # Example input arrays
-#     # Array 1: Smaller array (time and values)
-#     arr1 = signal
-
-#     # Array 2: Larger array (time and values)
-#     arr2 = recovered_signal
-#     # Extract time and values
-#     time1, values1 = arr1[0], arr1[1]
-#     time2, values2 = arr2[0], arr2[1]
-
-#     # Interpolate values1 to match time2
-#     interp_func = interp1d(time1, values1, kind='cubic', fill_value="extrapolate")
-#     values1_interpolated = interp_func(time2)
-
-#     # Compute the difference
-#     difference = abs(values1_interpolated - values2)
-
-#     # Resulting time and difference array
-#     result = np.array([time2, difference])
-
-#     # Output the difference
-#     # print("Difference shape:", result.shape)
-#     return result
-
-
 def calculate_difference(signal, recovered_signal):
     """
     Calculates the error in the recovered signal (difference between original and recovered signal).
