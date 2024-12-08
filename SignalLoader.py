@@ -69,7 +69,7 @@ class SignalLoader:
         signal = self.signal_data[1]
         if self.noisy_signal is not None:
             self.signal_data[1] = signal - self.noisy_signal
-        signal_power = np.sqrt(np.mean(signal ** 2))
+        signal_power = np.mean(signal ** 2)
         # signal_power = 10 * np.log10(signal_power)
 
         snr = 10**(snr /10)
