@@ -8,7 +8,7 @@ from qt_material import apply_stylesheet
 from PyQt5.QtWidgets import QApplication
 import sys
 import numpy as np
-
+import sinusoidal
 class SamplingTheoryStudio(UI):
     def __init__(self):
         super().__init__()
@@ -108,6 +108,7 @@ class SamplingTheoryStudio(UI):
         self.sampling_frequency = 2 * self.max_frequency
         self.sampled_points = SignalProcessor.sample_signal(self.signal, self.sampling_frequency)
         self.signal_orignal_for_diff = self.signal.copy()
+        # sinusoidal.save_signal(self.signal[0], self.signal[1])
         self.update_plot()
 
     def update_sampling_frequency(self, value):
