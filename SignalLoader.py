@@ -7,7 +7,7 @@ from pprint import pprint
 
 class SignalLoader:
     def __init__(self):
-        self.load_signal_from_file('file_of_signal/Respiratory Signal.csv')
+        self.load_signal_from_file('Signals\\synthetic_ecg_data.csv')
         self.noise = None
 
     def load_signal_from_file(self, filepath):
