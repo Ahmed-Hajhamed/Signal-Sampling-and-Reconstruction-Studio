@@ -1,5 +1,4 @@
 
-https://github.com/user-attachments/assets/02d0e026-84c8-4935-a039-5c1707304a97
 # Signal Sampling and Recovery Desktop Application
 
 ## Introduction
