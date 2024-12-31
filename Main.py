@@ -29,12 +29,18 @@ class SamplingTheoryStudio(UI):
         self.update_plot()
 
     def update_plot(self):
+        cropped_indices = np.where(self.signal[0] <= 2)[0]
         self.recovered_signal = SignalProcessor.recover_signal(self.signal[0], self.sampled_points,
                                            self.sampling_frequency, method=self.method)
         self.difference_signal_plot.setYRange(0, max(self.signal[1]))
         self.difference_signal = SignalProcessor.calculate_difference(self.signal_orignal_for_diff, self.recovered_signal)
         self.frequency_domain = SignalProcessor.frequency_domain(self.recovered_signal, self.sampling_frequency)
 
+        self.signal = self.signal[:, cropped_indices]
+        recovered_cropped_indices = np.where(self.recovered_signal[0] <= 2)[0]
+        self.recovered_signal = self.recovered_signal [:, recovered_cropped_indices]
+        self.difference_signal = self.difference_signal[:, cropped_indices]
+        
         self.original_signal_plot.clear()
         self.reconstructed_signal_plot.clear()
         self.difference_signal_plot.clear()
@@ -73,7 +79,7 @@ class SamplingTheoryStudio(UI):
         SignalMixer.components.clear()
         self.signal_loader.noise = None
         if self.signal is not None:
-            file_path, _ = QFileDialog.getOpenFileName(None, "Open CSV File", "", "CSV Files (*.csv)")
+            file_path, _ = QFileDialog.getOpenFileName(None, "Open CSV File", "Signals", "CSV Files (*.csv)")
             self.signal_loader.load_signal_from_file(file_path)
             self.signal = self.signal_loader.get_loaded_signal()
         else:
@@ -165,4 +171,3 @@ if __name__ == "__main__":
     apply_stylesheet(app, theme='dark_medical.xml')
     window.show()
     sys.exit(app.exec_())
-    

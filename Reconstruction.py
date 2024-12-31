@@ -39,7 +39,7 @@ def fourier(sampled_points, sampling_frequency):
 
 def spline(sampled_points):
     signal = sampled_points[1]
-    time = np.linspace(0, 2, len(signal))
+    time = np.linspace(0, sampled_points[0][-1], len(signal))
 
     spline = CubicSpline(time, signal, bc_type='natural')
     new_time = np.linspace(time[0], time[-1], 4 * len(time))  

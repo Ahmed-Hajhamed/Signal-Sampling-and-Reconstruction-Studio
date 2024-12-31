@@ -19,12 +19,12 @@ class SignalLoader:
             self.signal_data = np.array([time_data, amplitude_data])
             max_magnitude = None
 
-            cropped_indices = np.where(time_data <= 2)[0]  # crop the first 2 seconds
+            # cropped_indices = np.where(time_data <= 2)[0]  # crop the first 2 seconds
 
-            if cropped_indices.size > 0: 
-                self.signal_data = self.signal_data[:, cropped_indices]  
-            else:
-                print("Warning: No data points found for the first 2 seconds of the signal.")
+            # if cropped_indices.size > 0: 
+            #     self.signal_data = self.signal_data[:, cropped_indices]  
+            # else:
+            #     print("Warning: No data points found for the first 2 seconds of the signal.")
             
             self.maximum_freq = 1 / (2 * (time_data[1] - time_data[0]))
             
