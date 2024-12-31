@@ -71,7 +71,7 @@ class SamplingTheoryStudio(UI):
 
     def load_signal(self):
         SignalMixer.components.clear()
-        self.signal_loader.noisy_signal = None
+        self.signal_loader.noise = None
         if self.signal is not None:
             file_path, _ = QFileDialog.getOpenFileName(None, "Open CSV File", "", "CSV Files (*.csv)")
             self.signal_loader.load_signal_from_file(file_path)
@@ -125,9 +125,9 @@ class SamplingTheoryStudio(UI):
                 return
             self.signal_loader.add_noise(value)
         else:
-            if self.signal_loader.noisy_signal is not None:
-                self.signal_loader.signal_data[1] = self.signal_loader.signal_data[1] - self.signal_loader.noisy_signal
-                self.signal_loader.noisy_signal = None
+            if self.signal_loader.noise is not None:
+                self.signal_loader.signal_data[1] = self.signal_loader.signal_data[1] - self.signal_loader.noise
+                self.signal_loader.noise = None
         self.update_sampling_frequency(self.sampling_slider.value())
         self.update_plot()
 
