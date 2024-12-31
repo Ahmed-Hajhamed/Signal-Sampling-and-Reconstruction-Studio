@@ -1,5 +1,5 @@
 from PyQt5.QtWidgets import ( QMessageBox, QFileDialog )
-from ui import UI
+from UI import UI
 import pyqtgraph as pg
 from SignalLoader import SignalLoader
 import SignalMixer
@@ -8,7 +8,8 @@ from qt_material import apply_stylesheet
 from PyQt5.QtWidgets import QApplication
 import sys
 import numpy as np
-import sinusoidal
+
+
 class SamplingTheoryStudio(UI):
     def __init__(self):
         super().__init__()
@@ -45,13 +46,13 @@ class SamplingTheoryStudio(UI):
         self.sampling_frequency_label.setText(f"F_sampling={int(self.sampling_frequency)}Hz")
 
         if self.signal.size > 0:
-            self.original_signal_plot.plot(self.signal[0], self.signal[1], color ='blue')
+            self.original_signal_plot.plot(self.signal[0], self.signal[1], pen ='#850e5d')
             self.original_signal_plot.plot(self.sampled_points[0], self.sampled_points[1],
-                                            pen=None, symbol='o', symbolSize=5,symbolBrush='b', alpha=0.7)
+                                            pen=None, symbol='o', symbolSize=5,symbolBrush='#0070ff', alpha=0.7)
         if self.recovered_signal.size > 0:
-            self.reconstructed_signal_plot.plot(self.recovered_signal[0], self.recovered_signal[1])
+            self.reconstructed_signal_plot.plot(self.recovered_signal[0], self.recovered_signal[1], pen = '#850e5d')
         if self.difference_signal.size > 0:
-            self.difference_signal_plot.plot(self.difference_signal[0], self.difference_signal[1])
+            self.difference_signal_plot.plot(self.difference_signal[0], self.difference_signal[1], pen = '#850e5d')
 
         if self.frequency_domain.size > 0:
                 frequency_components = self.frequency_domain[0]
@@ -60,14 +61,14 @@ class SamplingTheoryStudio(UI):
                                             & (self.frequency_domain[0] <= self.sampling_frequency)
                 self.frequency_domain_plot.plot(frequency_components[original_band_mask], 
                                                 magnitude_components[original_band_mask], 
-                                                pen=pg.mkPen(color='white', width=2))
+                                                pen=pg.mkPen(color='#850e5d', width=2))
                 
                 for i, offset in enumerate(offsets):
                          repeated_band_mask = (frequency_components + offset >= -self.max_frequency)\
                                              & (frequency_components + offset <=self.max_frequency)
                          self.frequency_domain_plot.plot(frequency_components[repeated_band_mask] + offset, 
                                    magnitude_components[repeated_band_mask], 
-                                   pen=pg.mkPen(color='r'))
+                                   pen = '#0beedd')
 
     def load_signal(self):
         SignalMixer.components.clear()
@@ -108,7 +109,6 @@ class SamplingTheoryStudio(UI):
         self.sampling_frequency = 2 * self.max_frequency
         self.sampled_points = SignalProcessor.sample_signal(self.signal, self.sampling_frequency)
         self.signal_orignal_for_diff = self.signal.copy()
-        # sinusoidal.save_signal(self.signal[0], self.signal[1])
         self.update_plot()
 
     def update_sampling_frequency(self, value):
@@ -163,6 +163,6 @@ class SamplingTheoryStudio(UI):
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     window = SamplingTheoryStudio()
-    apply_stylesheet(app, theme='dark_teal.xml')
+    apply_stylesheet(app, theme='dark_medical.xml')
     window.show()
     sys.exit(app.exec_())

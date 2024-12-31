@@ -47,8 +47,6 @@ def create_signal(type_of_signal, amplitude, frequency):
 
 def set_time():
     global time
-    sampling_rate =100
-    # time = np.linspace(0, 2, int(sampling_rate))
     time = np.arange(0, 10 +0.008, 0.008)
 
 

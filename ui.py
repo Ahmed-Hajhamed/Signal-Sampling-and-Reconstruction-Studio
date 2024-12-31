@@ -21,9 +21,13 @@ class UI(QMainWindow):
         control_layout = QHBoxLayout()
 
         self.original_signal_plot = pg.PlotWidget(title="Original Signal")
-        self.reconstructed_signal_plot = pg.PlotWidget(title="Reconstructed Signal")
-        self.difference_signal_plot = pg.PlotWidget(title="Difference Signal")
+        self.reconstructed_signal_plot = pg.PlotWidget(title="Recovered Signal")
+        self.difference_signal_plot = pg.PlotWidget(title="Error")
         self.frequency_domain_plot = pg.PlotWidget(title="Frequency Domain")
+        self.original_signal_plot.setBackground('#2E2E2E')
+        self.reconstructed_signal_plot.setBackground('#2E2E2E')
+        self.difference_signal_plot.setBackground('#2E2E2E')
+        self.frequency_domain_plot.setBackground('#2E2E2E')
 
         self.curve_original_signal_plot = self.original_signal_plot.plot()
         self.curve_reconstructed_signal_plot = self.reconstructed_signal_plot.plot()
