@@ -1,3 +1,5 @@
+
+https://github.com/user-attachments/assets/02d0e026-84c8-4935-a039-5c1707304a97
 # Signal Sampling and Recovery Desktop Application
 
 ## Introduction
@@ -22,18 +24,12 @@ Sampling an analog signal is a crucial step in any digital signal processing sys
 - **Signal Mixer**: Add and combine multiple sinusoidal signals with different frequencies and magnitudes.
 - **Editable Components**: Allow removal of individual components while preparing the mixed signal.
 - **Default Values**: Ensure the interface is never empty and provides default signals for immediate use.
-  
-
-Uploading Screen Recording 2024-12-31 at 2.50.44 PM.mov…
-
-
+![load and compase](https://github.com/user-attachments/assets/7e9d5c19-d0a1-44cc-bc42-24e44d4a7313)
 
 ### 3. Additive Noise
 - **Noise Control**: Add noise to the signal with adjustable Signal-to-Noise Ratio (SNR).
 - **Noise Analysis**: Display how noise effects depend on the signal frequency.
-
-
-Uploading Screen Recording 2024-12-31 at 9.14.55 PM.mov…
+![Screen Shot 2024-12-31 at 9 19 51 PM](https://github.com/user-attachments/assets/933e0641-df73-4af7-8c53-662593bd9921)
 
 
 ### 4. Real-time Updates
@@ -41,9 +37,16 @@ Uploading Screen Recording 2024-12-31 at 9.14.55 PM.mov…
 - Eliminate the need for manual updates or refresh buttons.
 
 ### 5. Multiple Reconstruction Methods
-- **Exploration**: Provide a selection of reconstruction methods beyond Whittaker–Shannon for comparison.
-- **Customization**: Let users choose the reconstruction method via a combobox.
-- **Educational Examples**: Include signal examples highlighting the advantages and limitations of each method.
+- **Whittaker–Shannon, spline interpolation, and Fourier.**:
+  - **Whittaker–Shannon**
+  - ![Screen Shot 2024-12-31 at 9 34 14 PM](https://github.com/user-attachments/assets/deac92ec-10e5-4d65-935a-beec3402ed76)
+  - **spline interpolation**
+  - ![Screen Shot 2024-12-31 at 9 35 22 PM](https://github.com/user-attachments/assets/8767642a-797d-4391-8855-20c7c32da784)
+  - **Fourier interpolation**
+  - ![Screen Shot 2024-12-31 at 9 36 26 PM](https://github.com/user-attachments/assets/676f8e51-4cd5-4296-8ac4-7d76ba88b3c8)
+
+- **Customization**: Users can select the reconstruction method using a combobox.
+- ![Screen Shot 2024-12-31 at 9 33 08 PM](https://github.com/user-attachments/assets/6853db38-f3bd-41d6-92a0-5025204fa837)
 
 ### 6. Resizable UI
 - Ensure the application layout adjusts seamlessly to window resizing without disrupting usability or aesthetics.
@@ -80,11 +83,6 @@ Uploading Screen Recording 2024-12-31 at 9.14.55 PM.mov…
 3. Adjust sampling frequency and observe real-time changes in recovery and aliasing.
 4. Add noise and experiment with different SNR values.
 5. Compare reconstruction methods to explore their pros and cons.
-
-## Future Enhancements
-- Expand reconstruction method options.
-- Provide support for real-world signal inputs via hardware integration.
-- Add advanced noise analysis tools.
 
 ## References
 - [Nyquist–Shannon Sampling Theorem](https://en.wikipedia.org/wiki/Nyquist%E2%80%93Shannon_sampling_theorem)
