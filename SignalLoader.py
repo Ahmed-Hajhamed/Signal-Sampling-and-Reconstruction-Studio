@@ -3,29 +3,6 @@ import pandas as pd
 import SignalMixer
 from pprint import pprint
 
-def find_maximum_freq(signal):
-
-    time = signal[0]
-    amplitude = signal[1]
-    time_diff = np.diff(time)
-    sampling_rate = 1 / np.mean(time_diff) #equal 125 for defualt signal
-
-    n = len(amplitude)
-    fft_result = np.fft.fft(amplitude)
-    frequncies = np.fft.fftfreq(n, d= 1 /sampling_rate)
-
-    positive_freq = frequncies[:n//2]
-    positive_magnitudes = np.abs(fft_result[:n//2])
-
-
-
-    threshold = 1e-6
-    # significant_indices = np.where((positive_magnitudes > threshold) & ( positive_magnitudes <= max_magnitude))[0]
-    significant_indices = np.where(positive_magnitudes > threshold)[0]
-    max_freq = positive_freq[significant_indices[-1]]
-    # pprint(positive_freq)
-    # pprint(positive_magnitudes)
-    return max_freq
 
 
 class SignalLoader:
@@ -50,7 +27,6 @@ class SignalLoader:
                 print("Warning: No data points found for the first 2 seconds of the signal.")
             
             self.maximum_freq = 1 / (2 * (time_data[1] - time_data[0]))
-            # self.maximum_freq = find_maximum_freq(self.signal_data)
             
             
 
@@ -77,7 +53,6 @@ class SignalLoader:
         signal_power_db = 10 * np.log10(signal_power)
         noise_power_db = signal_power_db - snr_db 
         noise_power = 10 **(noise_power_db/10)
-        print(signal_power , snr_db, noise_power)
 
         self.noise = np.random.normal(0, np.sqrt(noise_power), size=signal.shape)
         self.signal_data[1] = signal + self.noise
