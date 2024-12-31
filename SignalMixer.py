@@ -47,7 +47,7 @@ def create_signal(type_of_signal, amplitude, frequency):
 
 def set_time():
     global time
-    time = np.arange(0, 10 +0.008, 0.008)
+    time = np.arange(0, 2 +0.008, 0.008)
 
 
 def add_sinusoidal_component():

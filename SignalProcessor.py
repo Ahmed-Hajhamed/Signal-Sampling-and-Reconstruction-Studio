@@ -27,7 +27,7 @@ def sample_signal(signal, sampling_frequency):
 
     return sampled_signal
 
-def recover_signal(original_time_points, sampled_points, sampling_frequency, method="Whittaker Shannon"):
+def recover_signal(original_time_points, sampled_points, sampling_frequency, method = "Whittaker Shannon"):
     """
     Reconstructs original signal from sampled points based on 3 methods; Niquist-Shannon,...
     """
@@ -40,6 +40,8 @@ def recover_signal(original_time_points, sampled_points, sampling_frequency, met
 
     elif method == 'Spline':
         recovered_signal = Reconstruction.spline(sampled_points)
+    else:
+        raise ValueError("Invalid Reconstruction Method")
     
     return recovered_signal
 
@@ -54,14 +56,10 @@ def calculate_difference(signal, recovered_signal):
 
     recovered_signal_values = align_signals(original_signal_time,
                                                 recovered_signal_time, recovered_signal_values)
-
     recovered_signal_values = np.pad(recovered_signal_values,
-                                        (0, len(original_signal_values) - len(recovered_signal_values)),
-                                        "constant")
+                                (0, len(original_signal_values) - len(recovered_signal_values)),"constant")
     magnitude_difference = []
-
     magnitude_difference = abs(original_signal_values - recovered_signal_values)
-
     signals_difference = np.array([original_signal_time, magnitude_difference])
     return signals_difference
 
@@ -83,7 +81,6 @@ def frequency_domain(recovered_signal, sampling_frequency):
     magnitude_components = magnitude_components[sorted_indices]
 
     frequency_domain = np.array([frequency_components, magnitude_components])
-    
     return frequency_domain
 
 def align_signals(original_time, recovered_time, recovered_values):
@@ -94,4 +91,4 @@ def align_signals(original_time, recovered_time, recovered_values):
 def calculate_padding(array_to_pad, reference_array):
     rows_diff = reference_array.shape[0] - array_to_pad.shape[0]
     cols_diff = reference_array.shape[1] - array_to_pad.shape[1]
-    return ((0, rows_diff), (0, cols_diff))  # Padding only on the bottom and right
+    return ((0, rows_diff), (0, cols_diff)) 

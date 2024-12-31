@@ -55,20 +55,19 @@ class SamplingTheoryStudio(UI):
             self.difference_signal_plot.plot(self.difference_signal[0], self.difference_signal[1], pen = '#850e5d')
 
         if self.frequency_domain.size > 0:
-                frequency_components = self.frequency_domain[0]
-                magnitude_components = self.frequency_domain[1]
-                original_band_mask = (self.frequency_domain[0] >= -self.sampling_frequency)\
-                                            & (self.frequency_domain[0] <= self.sampling_frequency)
-                self.frequency_domain_plot.plot(frequency_components[original_band_mask], 
-                                                magnitude_components[original_band_mask], 
-                                                pen=pg.mkPen(color='#850e5d', width=2))
-                
-                for i, offset in enumerate(offsets):
-                         repeated_band_mask = (frequency_components + offset >= -self.max_frequency)\
-                                             & (frequency_components + offset <=self.max_frequency)
-                         self.frequency_domain_plot.plot(frequency_components[repeated_band_mask] + offset, 
-                                   magnitude_components[repeated_band_mask], 
-                                   pen = '#0beedd')
+            frequency_components = self.frequency_domain[0]
+            magnitude_components = self.frequency_domain[1]
+            original_band_mask = (self.frequency_domain[0] >= -self.sampling_frequency)\
+                                        & (self.frequency_domain[0] <= self.sampling_frequency)
+            self.frequency_domain_plot.plot(frequency_components[original_band_mask], 
+                                            magnitude_components[original_band_mask], 
+                                            pen=pg.mkPen(color='#850e5d', width=2))
+            
+            for i, offset in enumerate(offsets):
+                repeated_band_mask = (frequency_components + offset >= -self.max_frequency)\
+                                    & (frequency_components + offset <=self.max_frequency)
+                self.frequency_domain_plot.plot(frequency_components[repeated_band_mask] + offset, 
+                                                magnitude_components[repeated_band_mask], pen = '#0beedd')
 
     def load_signal(self):
         SignalMixer.components.clear()

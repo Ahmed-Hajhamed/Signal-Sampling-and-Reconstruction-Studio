@@ -30,17 +30,15 @@ class SignalLoader:
             amplitude_data = self.signal_data.iloc[:, 1].values
             self.signal_data = np.array([time_data, amplitude_data])
 
-            cropped_indices = np.where(time_data <= 10)[0]  # crop
+            cropped_indices = np.where(time_data <= 2)[0]  # crop
 
             if cropped_indices.size > 0: 
                 self.signal_data = self.signal_data[:, cropped_indices]  
             else:
                 print("Warning: No data points found for the first 2 seconds of the signal.")
 
-            self.maximum_freq = find_maximum_freq(self.signal_data)
+            self.maximum_freq = 1 / (2* (time_data[1]) - time_data[0])
             
-            
-
     def load_signal_from_mixer(self):
         frequencies = []
         amplitude_data = SignalMixer.get_composed_signal()
@@ -49,8 +47,6 @@ class SignalLoader:
         for component in SignalMixer.components:
             frequencies.append(component["frequency"])
         self.maximum_freq =max(frequencies) 
-        # sampling_rate = (2*self.maximum_freq)
-        # time_data = np.linspace(0, 2, int(sampling_rate))
         self.signal_data = np.array([time_data, amplitude_data])
 
     def get_maximum_frequency(self):
