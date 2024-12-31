@@ -29,18 +29,17 @@ class SamplingTheoryStudio(UI):
         self.update_plot()
 
     def update_plot(self):
-        cropped_indices = np.where(self.signal[0] <= 2)[0]
         self.recovered_signal = SignalProcessor.recover_signal(self.signal[0], self.sampled_points,
                                            self.sampling_frequency, method=self.method)
         self.difference_signal_plot.setYRange(0, max(self.signal[1]))
         self.difference_signal = SignalProcessor.calculate_difference(self.signal_orignal_for_diff, self.recovered_signal)
         self.frequency_domain = SignalProcessor.frequency_domain(self.recovered_signal, self.sampling_frequency)
 
-        self.signal = self.signal[:, cropped_indices]
+        # Only show the first 2 seconds of signals
+        cropped_indices = np.where(self.signal[0] <= 2)[0]
+        samples_cropped_indices = np.where(self.sampled_points[0] <= 2)[0]
         recovered_cropped_indices = np.where(self.recovered_signal[0] <= 2)[0]
-        self.recovered_signal = self.recovered_signal [:, recovered_cropped_indices]
-        self.difference_signal = self.difference_signal[:, cropped_indices]
-        
+
         self.original_signal_plot.clear()
         self.reconstructed_signal_plot.clear()
         self.difference_signal_plot.clear()
@@ -52,13 +51,15 @@ class SamplingTheoryStudio(UI):
         self.sampling_frequency_label.setText(f"F_sampling={int(self.sampling_frequency)}Hz")
 
         if self.signal.size > 0:
-            self.original_signal_plot.plot(self.signal[0], self.signal[1], pen ='#850e5d')
-            self.original_signal_plot.plot(self.sampled_points[0], self.sampled_points[1],
-                                            pen=None, symbol='o', symbolSize=5,symbolBrush='#0070ff', alpha=0.7)
+            self.original_signal_plot.plot(self.signal[0, cropped_indices], self.signal[1, cropped_indices], pen ='#850e5d')
+            self.original_signal_plot.plot(self.sampled_points[0, samples_cropped_indices],
+                self.sampled_points[1, samples_cropped_indices], pen=None, symbol='o', symbolSize=5,symbolBrush='#0070ff', alpha=0.7)
         if self.recovered_signal.size > 0:
-            self.reconstructed_signal_plot.plot(self.recovered_signal[0], self.recovered_signal[1], pen = '#850e5d')
+            self.reconstructed_signal_plot.plot(self.recovered_signal[0, recovered_cropped_indices],
+                                                     self.recovered_signal[1, recovered_cropped_indices], pen = '#850e5d')
         if self.difference_signal.size > 0:
-            self.difference_signal_plot.plot(self.difference_signal[0], self.difference_signal[1], pen = '#850e5d')
+            self.difference_signal_plot.plot(self.difference_signal[0, cropped_indices],
+                                                 self.difference_signal[1, cropped_indices], pen = '#850e5d')
 
         if self.frequency_domain.size > 0:
             frequency_components = self.frequency_domain[0]
