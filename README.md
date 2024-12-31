@@ -48,18 +48,6 @@ Sampling an analog signal is a crucial step in any digital signal processing sys
 - **Customization**: Users can select the reconstruction method using a combobox.
 - ![Screen Shot 2024-12-31 at 9 33 08 PM](https://github.com/user-attachments/assets/6853db38-f3bd-41d6-92a0-5025204fa837)
 
-### 6. Resizable UI
-- Ensure the application layout adjusts seamlessly to window resizing without disrupting usability or aesthetics.
-
-### 7. Different Sampling Scenarios
-- Prepare and include at least three synthetic testing signals to demonstrate sampling scenarios. Examples include:
-  1. **Mix of 2Hz and 6Hz Sinusoids**:
-     - **Scenario**: When sampled at ≥12Hz, the signal recovers accurately.
-     - **Alias Check**: When sampled at 4Hz, the two frequencies appear as one.
-     - **Intermediate Case**: Sampling at 8Hz.
-  2. **Scenario 2**: A signal exploiting aliasing effects with non-integer frequency ratios.
-  3. **Scenario 3**: A signal demonstrating frequency-domain noise effects on sampling and recovery.
-
 ## Technologies Used
 - **Programming Language**: Python
 - **Framework**: PyQt or PySide for GUI development
