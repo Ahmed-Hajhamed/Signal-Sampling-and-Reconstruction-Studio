@@ -15,6 +15,7 @@ Sampling an analog signal is a crucial step in any digital signal processing sys
   3. Difference between the original and reconstructed signals.
   4. Frequency domain visualization to detect aliasing.
 - **User Interface**: Arrange the graphs conveniently to ensure ease of use.
+![sampling theory](https://github.com/user-attachments/assets/ff5e6de0-1abf-4df7-8e6e-e13a4c41040b)
 
 ### 2. Load & Compose
 - **Signal Loading**: Load signals from a file or create them using an integrated signal mixer.
@@ -75,18 +76,6 @@ Sampling an analog signal is a crucial step in any digital signal processing sys
 - Expand reconstruction method options.
 - Provide support for real-world signal inputs via hardware integration.
 - Add advanced noise analysis tools.
-
-## Testing Scenarios
-### Scenario 1: Mix of 2Hz and 6Hz Sinusoids
-- Sampling with 12Hz: Accurate recovery.
-- Sampling with 4Hz: Aliasing causes the two frequencies to appear as one.
-- Sampling with 8Hz: Intermediate case.
-
-### Scenario 2: Non-integer Frequency Aliasing
-- Create a signal with frequencies that are non-integer multiples to illustrate subtle aliasing effects.
-
-### Scenario 3: Frequency-Domain Noise Effects
-- Demonstrate how noise at specific frequencies impacts recovery accuracy.
 
 ## References
 - [Nyquist–Shannon Sampling Theorem](https://en.wikipedia.org/wiki/Nyquist%E2%80%93Shannon_sampling_theorem)
