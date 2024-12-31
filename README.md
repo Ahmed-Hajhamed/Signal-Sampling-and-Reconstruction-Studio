@@ -39,11 +39,11 @@ Sampling an analog signal is a crucial step in any digital signal processing sys
 ### 5. Multiple Reconstruction Methods
 - **Whittaker–Shannon, spline interpolation, and Fourier.**:
   - **Whittaker–Shannon**
-  - ![Screen Shot 2024-12-31 at 9 34 14 PM](https://github.com/user-attachments/assets/deac92ec-10e5-4d65-935a-beec3402ed76)
+    ![Screen Shot 2024-12-31 at 9 34 14 PM](https://github.com/user-attachments/assets/deac92ec-10e5-4d65-935a-beec3402ed76)
   - **spline interpolation**
-  - ![Screen Shot 2024-12-31 at 9 35 22 PM](https://github.com/user-attachments/assets/8767642a-797d-4391-8855-20c7c32da784)
+    ![Screen Shot 2024-12-31 at 9 35 22 PM](https://github.com/user-attachments/assets/8767642a-797d-4391-8855-20c7c32da784)
   - **Fourier interpolation**
-  - ![Screen Shot 2024-12-31 at 9 36 26 PM](https://github.com/user-attachments/assets/676f8e51-4cd5-4296-8ac4-7d76ba88b3c8)
+    ![Screen Shot 2024-12-31 at 9 36 26 PM](https://github.com/user-attachments/assets/676f8e51-4cd5-4296-8ac4-7d76ba88b3c8)
 
 - **Customization**: Users can select the reconstruction method using a combobox.
 - ![Screen Shot 2024-12-31 at 9 33 08 PM](https://github.com/user-attachments/assets/6853db38-f3bd-41d6-92a0-5025204fa837)
