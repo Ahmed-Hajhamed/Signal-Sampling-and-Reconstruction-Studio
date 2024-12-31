@@ -22,10 +22,19 @@ Sampling an analog signal is a crucial step in any digital signal processing sys
 - **Signal Mixer**: Add and combine multiple sinusoidal signals with different frequencies and magnitudes.
 - **Editable Components**: Allow removal of individual components while preparing the mixed signal.
 - **Default Values**: Ensure the interface is never empty and provides default signals for immediate use.
+  
+
+Uploading Screen Recording 2024-12-31 at 2.50.44 PM.mov…
+
+
 
 ### 3. Additive Noise
 - **Noise Control**: Add noise to the signal with adjustable Signal-to-Noise Ratio (SNR).
 - **Noise Analysis**: Display how noise effects depend on the signal frequency.
+
+
+Uploading Screen Recording 2024-12-31 at 9.14.55 PM.mov…
+
 
 ### 4. Real-time Updates
 - Perform sampling and recovery in real time as the user interacts with the application.
