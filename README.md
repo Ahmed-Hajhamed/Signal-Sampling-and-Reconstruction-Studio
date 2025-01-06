@@ -37,14 +37,18 @@ Sampling an analog signal is a crucial step in any digital signal processing sys
 ### 5. Multiple Reconstruction Methods
 - **Whittaker–Shannon, spline interpolation, and Fourier.**:
   - **Whittaker–Shannon**
-  - ![Screenshot 2025-01-06 192756](https://github.com/user-attachments/assets/2bdbd2ee-6f3e-4ed0-a514-f6b79f03a6a9)
+    ![Screenshot 2025-01-06 192756](https://github.com/user-attachments/assets/2bdbd2ee-6f3e-4ed0-a514-f6b79f03a6a9)
   - **Cubic Spline i Interpolation**
-  - ![Screenshot 2025-01-06 192614](https://github.com/user-attachments/assets/1f94132c-b473-4ec4-bf57-907c7673b12b)
+    ![Screenshot 2025-01-06 192614](https://github.com/user-attachments/assets/1f94132c-b473-4ec4-bf57-907c7673b12b)
   - **Low-Pass Filter**
-  - ![Screenshot 2025-01-06 192647](https://github.com/user-attachments/assets/446b4413-d480-47ac-a342-9386ebbcb7df)
+    ![Screenshot 2025-01-06 192647](https://github.com/user-attachments/assets/446b4413-d480-47ac-a342-9386ebbcb7df)
 
 - **Customization**: Users can select the reconstruction method using a combobox.
+  
 ![re](https://github.com/user-attachments/assets/9c8ca41e-f1dd-4a91-8825-3f6e7747ab56)
+
+### 5. Detetct Aliasing:
+![Screenshot 2025-01-06 192909](https://github.com/user-attachments/assets/d605bf39-8cd4-4fc2-8e04-b10a2e70536d)
 
 ## Technologies Used
 - **Programming Language**: Python
