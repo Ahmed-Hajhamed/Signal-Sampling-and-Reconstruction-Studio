@@ -7,9 +7,9 @@ Sampling an analog signal is a crucial step in any digital signal processing sys
 ## Features
 
 ### 1. Sample & Recover
-- **Visualization**: Load and visualize a mid-length signal (approximately 1000 points).
-- **Sampling**: Sample the signal at different frequencies, displayed either as actual frequency values or normalized values (e.g., ranging from 0×fmax to 4×fmax).
-- **Recovery**: Reconstruct the original signal using the Whittaker–Shannon interpolation formula.
+- **Visualization**: Load and visualize signal or either compose a signal in real-time.
+- **Sampling**: Sample the signal at different frequencies (ranging from 0×fmax to 4×fmax).
+- **Recovery**: Reconstruct the original signal using the Whittaker–Shannon Interpolation formula, Cubuc Spline Interpolation or a Fourier Low-Pass Filter.
 - **Graphical Outputs**: Four graphs to display:
   1. Original signal with sampled points marked.
   2. Reconstructed signal.
