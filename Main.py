@@ -30,7 +30,7 @@ class SamplingTheoryStudio(UI):
 
     def update_plot(self):
         self.recovered_signal = SignalProcessor.recover_signal(self.signal[0], self.sampled_points,
-                                           self.sampling_frequency, method=self.method)
+                                           self.sampling_frequency, reconstruction_method=self.method)
         self.difference_signal_plot.setYRange(0, max(self.signal[1]))
         self.difference_signal = SignalProcessor.calculate_difference(self.signal_orignal_for_diff, self.recovered_signal)
         self.frequency_domain = SignalProcessor.frequency_domain(self.recovered_signal, self.sampling_frequency)
@@ -141,8 +141,7 @@ class SamplingTheoryStudio(UI):
     def change_reconstruction_method(self):
         self.method = self.reconstruction_combo.currentText()
         self.recovered_signal = SignalProcessor.recover_signal(self.signal[0],self.sampled_points, 
-        
-                                                 self.sampling_frequency, self.method)
+                                                 self.sampling_frequency, reconstruction_method= self.method)
         self.update_plot()
         
     def load_test_scenario(self):

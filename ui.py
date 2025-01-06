@@ -1,7 +1,6 @@
 from PyQt5.QtWidgets import (
     QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QGridLayout,
-    QPushButton, QComboBox, QSlider, QLabel, QLineEdit, QFrame
-)
+    QPushButton, QComboBox, QSlider, QLabel, QLineEdit, QFrame )
 from PyQt5.QtCore import Qt
 import pyqtgraph as pg
 from PyQt5.QtGui import QIntValidator
@@ -86,8 +85,7 @@ class UI(QMainWindow):
         self.sampling_frequency_label.setStyleSheet(self.label_style_sheet)
         self.max_frequency_label = QLabel(f"4 F_max")
         self.max_frequency_label.setStyleSheet(self.label_style_sheet)
-        # self.sampling_frequency_label.setFixedWidth(130)
-        # self.max_frequency_label.setFixedWidth(130)
+
         def add_separator():
             separator = QFrame()
             separator.setFrameShape(QFrame.VLine)

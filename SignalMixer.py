@@ -14,7 +14,6 @@ def max_freq():
     for component in components:
         frequencies.append(component["frequency"])
     maximum_freq =max(frequencies)
-    
     return maximum_freq
 
 def add_components(expression: str):
@@ -30,7 +29,6 @@ def add_components(expression: str):
         frequency = int(match[3]) if match[3] else 1
 
         components.append({'sign': sign, 'type': func_type, 'amplitude': amplitude, 'frequency': frequency})
-    
 
 def create_signal(type_of_signal, amplitude, frequency):
     global time
@@ -41,14 +39,11 @@ def create_signal(type_of_signal, amplitude, frequency):
         signal = amplitude * np.sin( 2 * np.pi * frequency * time)
     else:
         raise ValueError ("Invalid Sinusoidal")
-
     return signal
-
 
 def set_time():
     global time
     time = np.arange(0, 2 +0.008, 0.008)
-
 
 def add_sinusoidal_component():
     # Add a sinusoidal component to the signal
@@ -57,8 +52,6 @@ def add_sinusoidal_component():
     set_time()
     composed_signal = np.array([])
 
-    if components:
-        check_line_edit_is_removed = True
     for component in components:
         signal = create_signal(component["type"], component["amplitude"], component["frequency"])
         if composed_signal.size != 0:

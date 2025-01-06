@@ -1,13 +1,11 @@
 import numpy as np
 import pandas as pd
 import SignalMixer
-from pprint import pprint
-
 
 
 class SignalLoader:
     def __init__(self):
-        self.load_signal_from_file('Signals\\synthetic_ecg_data.csv')
+        self.load_signal_from_file('Signals\\sinusoidal.csv')
         self.noise = None
 
     def load_signal_from_file(self, filepath):
@@ -18,17 +16,7 @@ class SignalLoader:
             amplitude_data = self.signal_data.iloc[:, 1].values
             self.signal_data = np.array([time_data, amplitude_data])
             max_magnitude = None
-
-            # cropped_indices = np.where(time_data <= 2)[0]  # crop the first 2 seconds
-
-            # if cropped_indices.size > 0: 
-            #     self.signal_data = self.signal_data[:, cropped_indices]  
-            # else:
-            #     print("Warning: No data points found for the first 2 seconds of the signal.")
-            
             self.maximum_freq = 1 / (2 * (time_data[1] - time_data[0]))
-            
-            
 
     def load_signal_from_mixer(self):
         global max_magnitude

@@ -4,7 +4,7 @@ from scipy.interpolate import interp1d
 
 def sample_signal(signal, sampling_frequency):
     """
-    Creates samples from a signal based on the method chosen; uniform, non-uniform or threshold sampling.
+    Creates uniform samples from a signal.
     """
     time_data = signal[0]
     amplitude_data = signal[1]
@@ -27,18 +27,18 @@ def sample_signal(signal, sampling_frequency):
 
     return sampled_signal
 
-def recover_signal(original_time_points, sampled_points, sampling_frequency, method = "Whittaker Shannon"):
+def recover_signal(original_time_points, sampled_points, sampling_frequency, reconstruction_method = "Whittaker Shannon"):
     """
     Reconstructs original signal from sampled points based on 3 methods; Niquist-Shannon,...
     """
     recovered_signal = None
-    if method == 'Whittaker Shannon':
+    if reconstruction_method == 'Whittaker Shannon':
         recovered_signal = Reconstruction.whittaker_shannon(original_time_points, sampled_points, sampling_frequency)
 
-    elif method == 'Fourier':
+    elif reconstruction_method == 'Fourier':
         recovered_signal = Reconstruction.fourier(sampled_points , sampling_frequency)
 
-    elif method == 'Spline':
+    elif reconstruction_method == 'Spline':
         recovered_signal = Reconstruction.spline(sampled_points)
     else:
         raise ValueError("Invalid Reconstruction Method")
@@ -87,8 +87,3 @@ def align_signals(original_time, recovered_time, recovered_values):
     interp_function = interp1d(recovered_time, recovered_values, bounds_error=False, fill_value="extrapolate")
     aligned_recovered_values = interp_function(original_time)
     return aligned_recovered_values
-
-def calculate_padding(array_to_pad, reference_array):
-    rows_diff = reference_array.shape[0] - array_to_pad.shape[0]
-    cols_diff = reference_array.shape[1] - array_to_pad.shape[1]
-    return ((0, rows_diff), (0, cols_diff)) 
