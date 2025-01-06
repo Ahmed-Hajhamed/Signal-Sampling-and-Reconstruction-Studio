@@ -16,20 +16,19 @@ Sampling an analog signal is a crucial step in any digital signal processing sys
   3. Difference between the original and reconstructed signals.
   4. Frequency domain visualization to detect aliasing.
 - **User Interface**: Arrange the graphs conveniently to ensure ease of use.
-![sampling theory](https://github.com/user-attachments/assets/ff5e6de0-1abf-4df7-8e6e-e13a4c41040b)
+![Screenshot 2025-01-06 192614](https://github.com/user-attachments/assets/3206ae0e-d280-4ed5-babf-faf39cddf3b9)
 
 ### 2. Load & Compose
 - **Signal Loading**: Load signals from a file or create them using an integrated signal mixer.
 - **Signal Mixer**: Add and combine multiple sinusoidal signals with different frequencies and magnitudes.
 - **Editable Components**: Allow removal of individual components while preparing the mixed signal.
 - **Default Values**: Ensure the interface is never empty and provides default signals for immediate use.
-![load and compase](https://github.com/user-attachments/assets/7e9d5c19-d0a1-44cc-bc42-24e44d4a7313)
+![Screenshot 2025-01-06 192756](https://github.com/user-attachments/assets/9e4f5416-9e4c-43fd-9356-a0fb1dc2b834)
 
 ### 3. Additive Noise
 - **Noise Control**: Add noise to the signal with adjustable Signal-to-Noise Ratio (SNR).
 - **Noise Analysis**: Display how noise effects depend on the signal frequency.
-![Screen Shot 2024-12-31 at 9 19 51 PM](https://github.com/user-attachments/assets/933e0641-df73-4af7-8c53-662593bd9921)
-
+![Screenshot 2025-01-06 193045](https://github.com/user-attachments/assets/aac93362-83cd-4c52-b7a0-77f929582992)
 
 ### 4. Real-time Updates
 - Perform sampling and recovery in real time as the user interacts with the application.
@@ -38,14 +37,14 @@ Sampling an analog signal is a crucial step in any digital signal processing sys
 ### 5. Multiple Reconstruction Methods
 - **Whittaker–Shannon, spline interpolation, and Fourier.**:
   - **Whittaker–Shannon**
-    ![Screen Shot 2024-12-31 at 9 34 14 PM](https://github.com/user-attachments/assets/deac92ec-10e5-4d65-935a-beec3402ed76)
-  - **spline interpolation**
-    ![Screen Shot 2024-12-31 at 9 35 22 PM](https://github.com/user-attachments/assets/8767642a-797d-4391-8855-20c7c32da784)
-  - **Fourier interpolation**
-    ![Screen Shot 2024-12-31 at 9 36 26 PM](https://github.com/user-attachments/assets/676f8e51-4cd5-4296-8ac4-7d76ba88b3c8)
+  - ![Screenshot 2025-01-06 192756](https://github.com/user-attachments/assets/2bdbd2ee-6f3e-4ed0-a514-f6b79f03a6a9)
+  - **Cubic Spline i Interpolation**
+  - ![Screenshot 2025-01-06 192614](https://github.com/user-attachments/assets/1f94132c-b473-4ec4-bf57-907c7673b12b)
+  - **Low-Pass Filter**
+  - ![Screenshot 2025-01-06 192647](https://github.com/user-attachments/assets/446b4413-d480-47ac-a342-9386ebbcb7df)
 
 - **Customization**: Users can select the reconstruction method using a combobox.
-- ![Screen Shot 2024-12-31 at 9 33 08 PM](https://github.com/user-attachments/assets/6853db38-f3bd-41d6-92a0-5025204fa837)
+![re](https://github.com/user-attachments/assets/9c8ca41e-f1dd-4a91-8825-3f6e7747ab56)
 
 ## Technologies Used
 - **Programming Language**: Python
@@ -54,7 +53,10 @@ Sampling an analog signal is a crucial step in any digital signal processing sys
 - **Signal Processing**: NumPy and SciPy libraries
 
 ## Installation
-1. Clone this repository.
+1. Clone this repository:
+  ```bash
+  git clone https://github.com/Ahmed-Hajhamed/Signal-Sampling-and-Reconstruction-Studio
+  ```
 2. Install the required dependencies:
    ```bash
    pip install -r requirements.txt
