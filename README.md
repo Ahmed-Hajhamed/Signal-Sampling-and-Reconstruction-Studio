@@ -59,7 +59,7 @@ Sampling an analog signal is a crucial step in any digital signal processing sys
 ## Installation
 1. Clone this repository:
     ```bash
-    git clone https://github.com/Ahmed-Hajhamed/Signal-Sampling-and-Reconstruction-Studio
+    git clone https://github.com/Ahmed-Hajhamed/Signal-Sampling-and-Reconstruction-Studio.git
     ```
 2. Install the required dependencies:
    ```bash
